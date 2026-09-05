@@ -1,0 +1,14 @@
+PLACE YOUR RESUME PDF HERE
+
+To add your resume:
+1. Create an ATS-friendly PDF of your resume
+2. Name it "resume.pdf"
+3. Place it in this folder (public/resume.pdf)
+4. The download button will automatically link to it
+
+ATS Resume Tips:
+- Use standard section headings (Experience, Education, Skills)
+- Avoid tables, columns, and graphics
+- Use standard fonts (Arial, Calibri, Times New Roman)
+- Include keywords from job descriptions
+- Save as PDF from Word or Google Docs
