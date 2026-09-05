@@ -9,164 +9,164 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R /F2 6 0 R /F3 7 0 R >> >> >>
 endobj
 4 0 obj
-<< /Length 2840 >>
+<< /Length 3200 >>
 stream
 BT
 % Header background
 0.31 0.13 0.47 rg
-0 762 612 30 re f
+0 752 612 40 re f
 
 % Name
-/F1 28 Tf
-30 770 Td
+/F1 26 Tf
+30 765 Td
 (Pooja Chaudhary) Tj
 
 % Contact info
 /F2 9 Tf
-0 -18 Td
+30 748 Td
 (poojachaudhary0912@gmail.com  |  linkedin.com/in/pooja-chaudhary-001527230  |  GitHub: chaudharypooja12) Tj
 
 % Divider line
 0.31 0.13 0.47 rg
-30 745 552 2 re f
+30 740 552 2 re f
 
 % EXPERIENCE header
-/F1 14 Tf
-0 -30 Td
+/F1 13 Tf
+30 715 Td
 (EXPERIENCE) Tj
 
-% Experience 1
-/F2 10 Tf
-0 -18 Td
+% Experience 1 - Coding Teacher
 /F3 10 Tf
+30 698 Td
 (Coding Teacher) Tj
-/F2 10 Tf
-50 0 Td
-( | Codingal | April 2024 - Present) Tj
 /F2 9 Tf
--50 -14 Td
+115 0 Td
+( | Codingal | April 2024 - Present) Tj
+/F2 8 Tf
+-115 -13 Td
 (- Teaching C++, Python, and JavaScript to students) Tj
-0 -12 Td
+0 -11 Td
 (- Developing engaging coding curriculum and mentoring students) Tj
-0 -12 Td
+0 -11 Td
 (- Conducting interactive coding sessions and problem-solving workshops) Tj
 
-% Experience 2
-0 -6 Td
+% Experience 2 - Freelancer
+0 -14 Td
 /F3 10 Tf
 (Technical Consultant (Freelancer)) Tj
-/F2 10 Tf
-0 -14 Td
-( | Self-Employed | March 2024 - Present) Tj
 /F2 9 Tf
-0 -14 Td
+0 -13 Td
+( | Self-Employed | March 2024 - Present) Tj
+/F2 8 Tf
+0 -13 Td
 (- Built multiple projects in Python and Next.js) Tj
-0 -12 Td
+0 -11 Td
 (- Developed full-stack web applications and RESTful APIs) Tj
-0 -12 Td
+0 -11 Td
 (- Implemented database solutions with PostgreSQL and Supabase) Tj
 
-% Experience 3
-0 -6 Td
+% Experience 3 - Teacher
+0 -14 Td
 /F3 10 Tf
 (Teacher - Computer Science) Tj
-/F2 10 Tf
-0 -14 Td
-( | GD Goenka Public School, Jhajjar | April 2023 - March 2024) Tj
 /F2 9 Tf
-0 -14 Td
+0 -13 Td
+( | GD Goenka Public School, Jhajjar | April 2023 - March 2024) Tj
+/F2 8 Tf
+0 -13 Td
 (- Developed and delivered Computer Science lessons) Tj
-0 -12 Td
+0 -11 Td
 (- Implemented innovative teaching methodologies and assessments) Tj
 
 % EDUCATION header
-/F1 14 Tf
-0 -24 Td
+/F1 13 Tf
+30 540 Td
 (EDUCATION) Tj
 
-% Education entries
+% M.Sc.
 /F3 10 Tf
-0 -16 Td
+30 522 Td
 (M.Sc. Computer Science) Tj
-/F2 9 Tf
-0 -14 Td
+/F2 8 Tf
+0 -12 Td
 (Maharshi Dayanand University, Rohtak | Aug 2020 - Aug 2022 | First Division) Tj
-0 -3 Td
-/F2 9 Tf
+0 -10 Td
 (Skills: SQL, Python, C/C++, Java, Visual Basic) Tj
 
+% B.Sc.
 0 -14 Td
 /F3 10 Tf
 (B.Sc. (General)) Tj
-/F2 9 Tf
-0 -14 Td
+/F2 8 Tf
+0 -12 Td
 (Maharshi Dayanand University, Rohtak | Aug 2016 - Jun 2019 | First Division) Tj
 
+% 12th
 0 -14 Td
 /F3 10 Tf
 (12th, Computer Science) Tj
-/F2 9 Tf
-0 -14 Td
+/F2 8 Tf
+0 -12 Td
 (Ganga International School | Jun 2015 - Mar 2016 | First Division) Tj
 
+% 10th
 0 -14 Td
 /F3 10 Tf
 (10th) Tj
-/F2 9 Tf
-0 -14 Td
+/F2 8 Tf
+0 -12 Td
 (Ganga International School | Jun 2013 - Mar 2014 | First Division) Tj
 
 % TECHNICAL SKILLS header
-/F1 14 Tf
-0 -24 Td
+/F1 13 Tf
+30 400 Td
 (TECHNICAL SKILLS) Tj
 
-% Skills
-/F2 9 Tf
-0 -14 Td
+/F2 8 Tf
+30 382 Td
 (Frontend: Next.js, JavaScript, Tailwind CSS, shadcn/ui, HTML) Tj
-0 -12 Td
+0 -11 Td
 (Backend: REST API, Resend, Supabase) Tj
-0 -12 Td
+0 -11 Td
 (Database: PostgreSQL, SQL, MySQL) Tj
-0 -12 Td
+0 -11 Td
 (Languages: Python, C, C++, Visual Basic) Tj
-0 -12 Td
+0 -11 Td
 (AI Tools: ChatGPT, Claude Code, Gemini, Meta AI, Cursor IDE, OpenCode) Tj
-0 -12 Td
+0 -11 Td
 (Tools: MS Office, VS Code, Vercel, GitHub, Gamma, Chatbots) Tj
 
 % PROJECTS header
-/F1 14 Tf
-0 -20 Td
+/F1 13 Tf
+30 300 Td
 (PROJECTS) Tj
 
-/F2 9 Tf
-0 -14 Td
+/F2 8 Tf
+30 282 Td
 (- Portfolio Website - Cosmic galaxy-themed portfolio, Next.js 16, deployed on Vercel) Tj
-0 -12 Td
+0 -11 Td
 (- Attendance Management System - Employee attendance management) Tj
-0 -12 Td
+0 -11 Td
 (- Banking Application - Account opening, balance enquiry) Tj
 
 % CERTIFICATIONS header
-/F1 14 Tf
-0 -20 Td
+/F1 13 Tf
+30 235 Td
 (CERTIFICATIONS) Tj
 
-/F2 9 Tf
-0 -14 Td
+/F2 8 Tf
+30 218 Td
 (- NSS Certificate) Tj
-0 -12 Td
+0 -11 Td
 (- Data Analysis and Visualization) Tj
 
 % ACHIEVEMENTS header
-/F1 14 Tf
-0 -20 Td
+/F1 13 Tf
+30 185 Td
 (ACHIEVEMENTS) Tj
 
-/F2 9 Tf
-0 -14 Td
+/F2 8 Tf
+30 168 Td
 (- Dean's List - Outstanding academic performance in M.Sc. Computer Science) Tj
 
 ET
@@ -188,11 +188,11 @@ xref
 0000000058 00000 n 
 0000000115 00000 n 
 0000000266 00000 n 
-0000003106 00000 n 
-0000003189 00000 n 
-0000003272 00000 n 
+0000003566 00000 n 
+0000003649 00000 n 
+0000003732 00000 n 
 trailer
 << /Size 8 /Root 1 0 R >>
 startxref
-3362
+3819
 %%EOF
