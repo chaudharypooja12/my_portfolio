@@ -6,7 +6,6 @@ import {
   ArrowLeft,
   ArrowRight,
   ArrowUp,
-  Gamepad2,
   Pause,
   Play,
   RotateCcw,
@@ -16,10 +15,8 @@ import {
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import {
@@ -245,28 +242,28 @@ function createRunningGameState(stats: StoredStats = DEFAULT_STATS): GameState {
 
 function getStatusText(state: GameState): string {
   if (state.status === "idle") {
-    return "Press Start, then use arrows or WASD to steer."
+    return "Ready. Start, then steer with arrows, WASD, or touch."
   }
 
   if (state.status === "paused") {
-    return "Paused. Resume when you are ready."
+    return "Paused."
   }
 
   if (state.status === "gameOver") {
     if (state.gameOverReason === "wall") {
-      return "Game over: you hit the wall."
+      return "Game over: wall crash."
     }
 
     if (state.gameOverReason === "self") {
-      return "Game over: you collided with your snake."
+      return "Game over: you hit your tail."
     }
 
     if (state.gameOverReason === "boardFull") {
-      return "You filled the entire board."
+      return "You filled the board. Perfect run."
     }
   }
 
-  return "Stay inside the grid, collect food, and keep growing."
+  return "Running. Grab fruit and keep the snake clear."
 }
 
 function getDirectionFromKey(key: string): Direction | null {
@@ -567,180 +564,165 @@ export function SnakeGame() {
   const foodsProgress = gameState.foodsEaten % LEVEL_UP_EVERY
   const foodsUntilNextLevel =
     foodsProgress === 0 ? LEVEL_UP_EVERY : LEVEL_UP_EVERY - foodsProgress
+  const speedMs = getTickMs(gameState.level)
 
   return (
-    <Card className="relative overflow-hidden border border-border/60 bg-card/80 shadow-[0_0_24px_oklch(0.55_0.16_300/10%)] backdrop-blur-sm">
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10" />
+    <Card className="relative w-full overflow-hidden border border-border/60 bg-card/85 shadow-[0_0_24px_oklch(0.55_0.16_300/10%)] backdrop-blur-sm">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,oklch(0.82_0.16_140/18%),transparent_35%),radial-gradient(circle_at_bottom_right,oklch(0.78_0.16_30/18%),transparent_28%)]" />
 
-      <CardHeader className="relative gap-4">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary via-nebula-2 to-accent text-primary-foreground shadow-[0_0_20px_oklch(0.55_0.18_300/20%)]">
-                <Gamepad2 className="h-5 w-5" />
+      <CardHeader className="relative gap-2 px-3 pb-2 pt-3 sm:px-4">
+        <div className="grid grid-cols-2 gap-2">
+              <div className="glass rounded-xl px-3 py-2">
+                <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                  <Trophy className="h-3.5 w-3.5" />
+                  Score
+                </div>
+                <div className="mt-1 flex items-end justify-between gap-3">
+                  <span className="text-2xl font-semibold text-foreground">{gameState.score}</span>
+                  <span className="text-xs text-muted-foreground">Best {highScore}</span>
+                </div>
               </div>
-              <div>
-                <CardTitle>Snake Game</CardTitle>
-                <CardDescription>
-                  Responsive arcade mode with keyboard and touch controls.
-                </CardDescription>
-              </div>
-            </div>
 
-            <p
-              aria-live="polite"
-              className="max-w-xl text-sm leading-relaxed text-muted-foreground"
-            >
-              {getStatusText(gameState)}
-            </p>
-          </div>
+              <div className="glass rounded-xl px-3 py-2">
+                <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                  <TrendingUp className="h-3.5 w-3.5" />
+                  Level
+                </div>
+                <div className="mt-1 flex items-end justify-between gap-3">
+                  <span className="text-2xl font-semibold text-foreground">{gameState.level}</span>
+                  <span className="text-xs text-muted-foreground">
+                    Best {highestLevel}
+                  </span>
+                </div>
+              </div>
 
-          <div className="grid min-w-full gap-2 sm:min-w-[14rem] sm:grid-cols-2">
-            <div className="glass rounded-xl px-3 py-2">
-              <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-                <Trophy className="h-3.5 w-3.5" />
-                Score
-              </div>
-              <div className="mt-1 flex items-end justify-between gap-3">
-                <span className="text-2xl font-semibold text-foreground">{gameState.score}</span>
-                <span className="text-xs text-muted-foreground">Best {highScore}</span>
-              </div>
-            </div>
-
-            <div className="glass rounded-xl px-3 py-2">
-              <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-                <TrendingUp className="h-3.5 w-3.5" />
-                Level
-              </div>
-              <div className="mt-1 flex items-end justify-between gap-3">
-                <span className="text-2xl font-semibold text-foreground">{gameState.level}</span>
-                <span className="text-xs text-muted-foreground">
-                  Best {highestLevel}
-                </span>
-              </div>
-            </div>
-          </div>
+          <p
+            aria-live="polite"
+            className="col-span-2 text-center text-xs text-muted-foreground"
+          >
+            {getStatusText(gameState)}
+          </p>
         </div>
       </CardHeader>
 
-      <CardContent className="relative space-y-5">
-        <div className="flex flex-wrap gap-2">
-          <Button
-            type="button"
-            onClick={startGame}
-            disabled={gameState.status === "running" || gameState.status === "paused"}
-          >
-            <Play className="h-4 w-4" />
-            Start
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={pauseGame}
-            disabled={gameState.status !== "running"}
-          >
-            <Pause className="h-4 w-4" />
-            Pause
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={resumeGame}
-            disabled={gameState.status !== "paused"}
-          >
-            <Play className="h-4 w-4" />
-            Resume
-          </Button>
-          <Button type="button" variant="secondary" onClick={restartGame}>
-            <RotateCcw className="h-4 w-4" />
-            Restart
-          </Button>
+      <CardContent className="relative space-y-4 pt-0">
+        <div className="flex flex-wrap items-center justify-center gap-2 text-center text-xs text-muted-foreground">
+          <span className="rounded-full border border-border/60 bg-background/50 px-2.5 py-1">
+            Grid {GRID_SIZE}×{GRID_SIZE}
+          </span>
+          <span className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-emerald-700 dark:text-emerald-300">
+            Next level in {foodsUntilNextLevel} food
+          </span>
+          <span className="rounded-full border border-amber-500/20 bg-amber-500/10 px-2.5 py-1 text-amber-700 dark:text-amber-300">
+            Speed {speedMs} ms
+          </span>
         </div>
 
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_13rem] lg:items-start">
-          <div className="space-y-3">
-            <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
-              <span>Food to next level: {foodsUntilNextLevel}</span>
-              <span>Speed: {getTickMs(gameState.level)} ms</span>
-            </div>
+        <div className="mx-auto w-full max-w-[20rem] rounded-[calc(var(--radius-xl)+2px)] border border-border/60 bg-background/55 p-1.5 shadow-[inset_0_1px_0_oklch(1_0_0/12%)] sm:p-2">
+          <div
+            role="img"
+            aria-label={`Snake board, ${GRID_SIZE} by ${GRID_SIZE}. Score ${gameState.score}, level ${gameState.level}. ${getStatusText(gameState)}`}
+            className="grid aspect-square w-full gap-px overflow-hidden rounded-[var(--radius-xl)] bg-emerald-950/20"
+            style={{
+              gridTemplateColumns: `repeat(${GRID_SIZE}, minmax(0, 1fr))`,
+            }}
+          >
+            {cells.map((cell) => {
+              const key = pointKey(cell)
+              const isHead = key === headKey
+              const isFood = key === foodKey
+              const isSnake = snakeCellKeys.has(key)
 
-            <div className="mx-auto w-full max-w-[32rem] rounded-[calc(var(--radius-xl)+2px)] border border-border/60 bg-background/50 p-2 shadow-[inset_0_1px_0_oklch(1_0_0/12%)]">
-              <div
-                className="grid aspect-square w-full gap-px overflow-hidden rounded-[var(--radius-xl)] bg-border/30"
-                style={{
-                  gridTemplateColumns: `repeat(${GRID_SIZE}, minmax(0, 1fr))`,
-                }}
-              >
-                {cells.map((cell) => {
-                  const key = pointKey(cell)
-                  const isHead = key === headKey
-                  const isFood = key === foodKey
-                  const isSnake = snakeCellKeys.has(key)
+              return (
+                <div
+                  key={key}
+                  aria-hidden="true"
+                  className={[
+                    "flex aspect-square items-center justify-center bg-emerald-950/10 text-[clamp(0.45rem,1.5vw,0.9rem)] leading-none transition-all",
+                    isHead
+                      ? "bg-gradient-to-br from-lime-300 via-emerald-400 to-green-600 shadow-[0_0_14px_oklch(0.8_0.23_145/40%)]"
+                      : "",
+                    !isHead && isSnake
+                      ? "bg-gradient-to-br from-emerald-400 via-green-500 to-lime-500"
+                      : "",
+                    isFood
+                      ? "bg-gradient-to-br from-orange-200 via-amber-300 to-rose-300 shadow-[0_0_12px_oklch(0.82_0.18_55/40%)]"
+                      : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                >
+                  {isFood ? <span className="drop-shadow-sm">🍎</span> : null}
+                </div>
+              )
+            })}
+          </div>
+        </div>
 
-                  return (
-                    <div
-                      key={key}
-                      className={[
-                        "aspect-square bg-background/85 transition-colors",
-                        isHead
-                          ? "bg-gradient-to-br from-primary via-nebula-2 to-accent shadow-[0_0_14px_oklch(0.55_0.20_300/30%)]"
-                          : "",
-                        !isHead && isSnake ? "bg-primary/80" : "",
-                        isFood ? "bg-accent shadow-[0_0_12px_oklch(0.65_0.18_30/25%)]" : "",
-                      ]
-                        .filter(Boolean)
-                        .join(" ")}
-                    />
-                  )
-                })}
-              </div>
-            </div>
+        <div className="space-y-3">
+          <div className="text-center text-xs text-muted-foreground">
+            Use arrows or WASD, or tap the controls below.
           </div>
 
-          <div className="space-y-4">
-            <div className="glass rounded-[var(--radius-xl)] p-4">
-              <h3 className="text-sm font-semibold text-foreground">Rules</h3>
-              <ul className="mt-3 ml-5 list-disc space-y-2 text-sm leading-relaxed text-muted-foreground">
-                <li>Use arrow keys or WASD to move.</li>
-                <li>Eat food to grow and score.</li>
-                <li>Every {LEVEL_UP_EVERY} food raises the level and pace.</li>
-                <li>Avoid walls and your own body.</li>
-              </ul>
-            </div>
+          <div className="mx-auto grid w-full max-w-[11rem] grid-cols-3 gap-2">
+            {DIRECTION_BUTTONS.map(({ direction, icon: Icon, label, position }) => (
+              <button
+                key={direction}
+                type="button"
+                aria-label={label}
+                onPointerDown={() => handleDirectionChange(direction)}
+                className={[
+                  "glass flex h-11 touch-manipulation items-center justify-center rounded-xl text-emerald-700 transition-all duration-200 hover:border-emerald-500/50 hover:text-emerald-900 dark:text-emerald-300 dark:hover:text-emerald-100",
+                  "active:scale-95 active:bg-emerald-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
+                  position,
+                ].join(" ")}
+              >
+                <Icon className="h-5 w-5" />
+              </button>
+            ))}
+          </div>
 
-            <div className="glass rounded-[var(--radius-xl)] p-4">
-              <div className="mb-3 flex items-center gap-2">
-                <Gamepad2 className="h-4 w-4 text-primary" />
-                <h3 className="text-sm font-semibold text-foreground">Touch controls</h3>
-              </div>
-              <div className="mx-auto grid w-full max-w-[12rem] grid-cols-3 gap-2">
-                {DIRECTION_BUTTONS.map(({ direction, icon: Icon, label, position }) => (
-                  <button
-                    key={direction}
-                    type="button"
-                    aria-label={label}
-                    onPointerDown={() => handleDirectionChange(direction)}
-                    className={[
-                      "glass flex h-12 touch-manipulation items-center justify-center rounded-xl text-muted-foreground transition-all duration-200 hover:border-primary/50 hover:text-foreground",
-                      "active:scale-95 active:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
-                      position,
-                    ].join(" ")}
-                  >
-                    <Icon className="h-5 w-5" />
-                  </button>
-                ))}
-              </div>
-            </div>
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <Button
+              type="button"
+              size="sm"
+              onClick={startGame}
+              disabled={gameState.status === "running" || gameState.status === "paused"}
+            >
+              <Play className="h-4 w-4" />
+              Start
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={pauseGame}
+              disabled={gameState.status !== "running"}
+            >
+              <Pause className="h-4 w-4" />
+              Pause
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={resumeGame}
+              disabled={gameState.status !== "paused"}
+            >
+              <Play className="h-4 w-4" />
+              Resume
+            </Button>
+            <Button type="button" size="sm" variant="secondary" onClick={restartGame}>
+              <RotateCcw className="h-4 w-4" />
+              Restart
+            </Button>
           </div>
         </div>
       </CardContent>
 
-      <CardFooter className="relative flex flex-wrap items-center justify-between gap-2 border-t border-border/60 bg-background/30">
-        <span className="text-xs text-muted-foreground">
-          Grid {GRID_SIZE}×{GRID_SIZE}
-        </span>
-        <span className="text-xs text-muted-foreground">
-          High score and top level are saved on this device.
+      <CardFooter className="relative justify-center border-t border-border/60 bg-background/30 py-3">
+        <span className="text-center text-xs text-muted-foreground">
+          Best score and level stay saved on this device.
         </span>
       </CardFooter>
     </Card>

@@ -20,10 +20,6 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import {
@@ -39,7 +35,6 @@ type Outcome = Mark | "draw" | null;
 interface DifficultyOption {
   value: Difficulty;
   label: string;
-  description: string;
   icon: LucideIcon;
 }
 
@@ -58,19 +53,16 @@ const DIFFICULTY_OPTIONS: readonly DifficultyOption[] = [
   {
     value: "easy",
     label: "Easy",
-    description: "Random legal moves.",
     icon: Shuffle,
   },
   {
     value: "medium",
     label: "Medium",
-    description: "Mixes tactical play with randomness.",
     icon: Shield,
   },
   {
     value: "hard",
     label: "Hard",
-    description: "Optimal minimax play.",
     icon: Brain,
   },
 ];
@@ -295,11 +287,21 @@ function getCellLabel(index: number, value: CellValue): string {
 
 function renderMark(value: CellValue) {
   if (value === "X") {
-    return <X className="h-8 w-8 text-primary md:h-10 md:w-10" aria-hidden="true" />;
+    return (
+      <X
+        className="h-7 w-7 stroke-[2.25] text-primary sm:h-8 sm:w-8 md:h-9 md:w-9"
+        aria-hidden="true"
+      />
+    );
   }
 
   if (value === "O") {
-    return <Circle className="h-8 w-8 text-accent md:h-10 md:w-10" aria-hidden="true" />;
+    return (
+      <Circle
+        className="h-7 w-7 stroke-[2.25] text-accent sm:h-8 sm:w-8 md:h-9 md:w-9"
+        aria-hidden="true"
+      />
+    );
   }
 
   return null;
@@ -307,18 +309,18 @@ function renderMark(value: CellValue) {
 
 function getStatusText(outcome: Outcome, isComputerTurn: boolean): string {
   if (outcome === "X") {
-    return "You won this round.";
+    return "You win the round.";
   }
 
   if (outcome === "O") {
-    return "The computer won this round.";
+    return "AI wins the round.";
   }
 
   if (outcome === "draw") {
-    return "This round is a draw.";
+    return "Round drawn.";
   }
 
-  return isComputerTurn ? "Computer is thinking..." : "Your turn. Place X on any open square.";
+  return isComputerTurn ? "AI is thinking..." : "Your move.";
 }
 
 export function TicTacToeGame() {
@@ -343,6 +345,38 @@ export function TicTacToeGame() {
     () => getStatusText(outcome, isComputerTurn),
     [outcome, isComputerTurn]
   );
+  const isBoardLocked = isComputerTurn || outcome !== null;
+  const scoreboardItems = [
+    {
+      label: "You",
+      value: scores.player,
+      icon: UserRound,
+      accent: "text-primary",
+    },
+    {
+      label: "AI",
+      value: scores.computer,
+      icon: Bot,
+      accent: "text-accent",
+    },
+    {
+      label: "Draws",
+      value: scores.draws,
+      icon: Minus,
+      accent: "text-muted-foreground",
+    },
+    {
+      label: "Best",
+      value: bestPlayerWins,
+      icon: Trophy,
+      accent: "text-primary",
+    },
+  ] satisfies readonly {
+    label: string;
+    value: number;
+    icon: LucideIcon;
+    accent: string;
+  }[];
 
   useEffect(() => {
     return () => {
@@ -444,7 +478,7 @@ export function TicTacToeGame() {
   };
 
   const handleSquareClick = (index: number) => {
-    if (board[index] !== null || isComputerTurn || outcome !== null) {
+    if (board[index] !== null || isBoardLocked) {
       return;
     }
 
@@ -460,197 +494,148 @@ export function TicTacToeGame() {
 
   return (
     <div className="w-full">
-      <Card className="overflow-hidden border border-border/60 bg-card/85 shadow-[0_0_30px_oklch(0.7_0.12_280/10%)] backdrop-blur">
-        <CardHeader className="gap-4">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-              <Sparkles className="h-3.5 w-3.5" />
-              Playable project
-            </span>
-            <span className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/60 px-3 py-1 text-xs font-medium text-muted-foreground">
-              <UserRound className="h-3.5 w-3.5 text-primary" />
-              You are X
-            </span>
-            <span className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/60 px-3 py-1 text-xs font-medium text-muted-foreground">
-              <Bot className="h-3.5 w-3.5 text-accent" />
-              Computer is O
-            </span>
-          </div>
-
-          <div className="space-y-1">
-            <CardTitle className="text-xl md:text-2xl">Tic-tac-toe</CardTitle>
-            <CardDescription>
-              Beat the computer across three difficulty levels without leaving the
-              portfolio.
-            </CardDescription>
-          </div>
-        </CardHeader>
-
-        <CardContent className="space-y-6">
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            {[
-              {
-                label: "Player wins",
-                value: scores.player,
-                icon: UserRound,
-                accent: "text-primary",
-              },
-              {
-                label: "Computer wins",
-                value: scores.computer,
-                icon: Bot,
-                accent: "text-accent",
-              },
-              {
-                label: "Draws",
-                value: scores.draws,
-                icon: Minus,
-                accent: "text-muted-foreground",
-              },
-              {
-                label: "Best saved",
-                value: bestPlayerWins,
-                icon: Trophy,
-                accent: "text-primary",
-              },
-            ].map((item) => (
-              <div
-                key={item.label}
-                className="rounded-2xl border border-border/60 bg-background/50 p-3"
-              >
-                <div className="flex items-center gap-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">
-                  <item.icon className={cn("h-3.5 w-3.5", item.accent)} />
-                  {item.label}
-                </div>
-                <div className="mt-2 text-2xl font-semibold text-foreground">
-                  {item.value}
-                </div>
-              </div>
-            ))}
-          </div>
-
+      <Card className="overflow-hidden border border-border/60 bg-card/90 shadow-[0_18px_50px_rgba(10,14,35,0.16)] backdrop-blur">
+        <CardContent className="grid gap-3 px-3 py-3 sm:px-4 sm:py-4 lg:grid-cols-[minmax(0,1fr)_15rem] lg:items-start">
           <div className="space-y-3">
-            <div className="flex items-center justify-between gap-3">
-              <h3 className="text-sm font-semibold text-foreground">Difficulty</h3>
-              <span className="text-xs text-muted-foreground">
-                Changes apply immediately
-              </span>
-            </div>
-
             <div
-              className="grid gap-2 sm:grid-cols-3"
-              role="group"
-              aria-label="Select computer difficulty"
-            >
-              {DIFFICULTY_OPTIONS.map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() => setDifficulty(option.value)}
-                  aria-pressed={difficulty === option.value}
-                  className={cn(
-                    "rounded-2xl border px-3 py-3 text-left transition-all duration-200 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 outline-none",
-                    difficulty === option.value
-                      ? "border-primary/40 bg-primary/10 shadow-[0_0_20px_oklch(0.7_0.12_280/10%)]"
-                      : "border-border/60 bg-background/50 hover:border-primary/30 hover:bg-primary/5"
-                  )}
-                >
-                  <div className="flex items-center gap-2 font-medium text-foreground">
-                    <option.icon
-                      className={cn(
-                        "h-4 w-4",
-                        difficulty === option.value ? "text-primary" : "text-muted-foreground"
-                      )}
-                    />
-                    {option.label}
-                  </div>
-                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                    {option.description}
-                  </p>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-border/60 bg-background/40 p-4">
-            <div
-              className="flex items-center gap-2 rounded-xl border border-border/60 bg-card/70 px-3 py-2 text-sm text-foreground"
+              className="flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/10 via-background to-accent/10 px-3 py-2 text-center text-sm font-medium text-foreground"
               role="status"
               aria-live="polite"
               aria-atomic="true"
             >
               {isComputerTurn && outcome === null ? (
-                <LoaderCircle className="h-4 w-4 animate-spin text-accent" />
+                <LoaderCircle className="h-4 w-4 shrink-0 animate-spin text-accent" />
               ) : outcome === "X" ? (
-                <Trophy className="h-4 w-4 text-primary" />
+                <Trophy className="h-4 w-4 shrink-0 text-primary" />
               ) : outcome === "O" ? (
-                <Trophy className="h-4 w-4 text-accent" />
+                <Trophy className="h-4 w-4 shrink-0 text-accent" />
               ) : outcome === "draw" ? (
-                <Minus className="h-4 w-4 text-muted-foreground" />
+                <Minus className="h-4 w-4 shrink-0 text-muted-foreground" />
               ) : (
-                <Sparkles className="h-4 w-4 text-primary" />
+                <Sparkles className="h-4 w-4 shrink-0 text-primary" />
               )}
               <span>{statusText}</span>
             </div>
 
-            <div className="mt-4 grid gap-2" role="grid" aria-label="Tic-tac-toe board" aria-busy={isComputerTurn}>
-              {Array.from({ length: 3 }, (_, rowIndex) => (
-                <div key={rowIndex} className="grid grid-cols-3 gap-2" role="row">
-                  {board.slice(rowIndex * 3, rowIndex * 3 + 3).map((value, columnIndex) => {
-                    const index = rowIndex * 3 + columnIndex;
-                    const isWinningCell = winningLine.includes(index);
+            <div className="mx-auto w-full max-w-[15rem] rounded-[1.85rem] border border-primary/30 bg-gradient-to-br from-primary/25 via-accent/20 to-primary/25 p-1.5 shadow-[0_0_36px_oklch(0.7_0.12_280/16%)] sm:max-w-[17rem]">
+              <div
+                className="grid gap-[3px] rounded-[1.45rem] bg-gradient-to-br from-primary/40 via-accent/30 to-primary/40 p-[3px]"
+                role="grid"
+                aria-label="Tic-tac-toe board"
+                aria-busy={isComputerTurn}
+              >
+                {Array.from({ length: 3 }, (_, rowIndex) => (
+                  <div key={rowIndex} className="grid grid-cols-3 gap-[3px]" role="row">
+                    {board
+                      .slice(rowIndex * 3, rowIndex * 3 + 3)
+                      .map((value, columnIndex) => {
+                        const index = rowIndex * 3 + columnIndex;
+                        const isWinningCell = winningLine.includes(index);
+                        const cellIsFilled = value !== null;
 
-                    return (
-                      <div key={index} role="gridcell">
-                        <button
-                          type="button"
-                          aria-label={getCellLabel(index, value)}
-                          disabled={value !== null || isComputerTurn || outcome !== null}
-                          onClick={() => handleSquareClick(index)}
-                          className={cn(
-                            "group aspect-square w-full rounded-2xl border bg-background/70 transition-all duration-200 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 outline-none disabled:cursor-not-allowed disabled:opacity-100",
-                            isWinningCell
-                              ? "border-primary/40 bg-primary/10 shadow-[0_0_20px_oklch(0.7_0.12_280/10%)]"
-                              : "border-border/60",
-                            value === null && !isComputerTurn && outcome === null
-                              ? "hover:border-primary/40 hover:bg-primary/5"
-                              : "hover:border-border/60"
-                          )}
-                        >
-                          <span className="flex h-full w-full items-center justify-center">
-                            {renderMark(value)}
-                          </span>
-                        </button>
-                      </div>
-                    );
-                  })}
+                        return (
+                          <div key={index} role="gridcell">
+                            <button
+                              type="button"
+                              aria-label={getCellLabel(index, value)}
+                              disabled={cellIsFilled || isBoardLocked}
+                              onClick={() => handleSquareClick(index)}
+                              className={cn(
+                                "group flex aspect-square w-full items-center justify-center rounded-[1rem] border border-border/40 bg-background/95 transition-all duration-200 outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-100",
+                                isWinningCell &&
+                                  "border-primary/45 bg-primary/16 shadow-[inset_0_0_0_1px_oklch(0.7_0.12_280/35%)]",
+                                value === "X" && !isWinningCell && "bg-primary/8",
+                                value === "O" && !isWinningCell && "bg-accent/10",
+                                !cellIsFilled &&
+                                  !isBoardLocked &&
+                                  "hover:-translate-y-0.5 hover:border-primary/40 hover:bg-primary/8",
+                                !cellIsFilled &&
+                                  isComputerTurn &&
+                                  "bg-background/85 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.04)]"
+                              )}
+                            >
+                              {renderMark(value)}
+                            </button>
+                          </div>
+                        );
+                      })}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <div className="grid grid-cols-4 gap-1.5 lg:grid-cols-2 lg:gap-2">
+              {scoreboardItems.map((item) => (
+                <div
+                  key={item.label}
+                  className="rounded-xl border border-border/60 bg-background/70 p-1.5 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] lg:rounded-2xl lg:p-2.5"
+                >
+                  <div className="flex items-center justify-center gap-1.5 text-[11px] font-semibold tracking-[0.16em] text-muted-foreground uppercase">
+                    <item.icon className={cn("h-3.5 w-3.5", item.accent)} />
+                    {item.label}
+                  </div>
+                  <div className="mt-1 text-lg font-semibold text-foreground lg:mt-1.5 lg:text-2xl">
+                    {item.value}
+                  </div>
                 </div>
               ))}
             </div>
+
+            <div className="rounded-2xl border border-border/60 bg-background/65 p-3">
+              <div className="mb-2 flex items-center justify-center gap-2 text-[11px] font-semibold tracking-[0.18em] text-muted-foreground uppercase">
+                <Brain className="h-3.5 w-3.5 text-primary" />
+                Difficulty
+              </div>
+
+              <div
+                className="grid grid-cols-3 gap-2"
+                role="group"
+                aria-label="Select computer difficulty"
+              >
+                {DIFFICULTY_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setDifficulty(option.value)}
+                    aria-pressed={difficulty === option.value}
+                    className={cn(
+                      "rounded-xl border px-2 py-2 text-center transition-all duration-200 outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
+                      difficulty === option.value
+                        ? "border-primary/45 bg-primary/12 shadow-[0_0_24px_oklch(0.7_0.12_280/12%)]"
+                        : "border-border/60 bg-background/70 hover:border-primary/30 hover:bg-primary/6"
+                    )}
+                  >
+                    <option.icon
+                      className={cn(
+                        "mx-auto h-4 w-4",
+                        difficulty === option.value ? "text-primary" : "text-muted-foreground"
+                      )}
+                    />
+                    <div className="mt-1 text-xs font-medium text-foreground">{option.label}</div>
+                  </button>
+                ))}
+              </div>
+
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <Button type="button" className="w-full" onClick={startNewRound}>
+                  <RotateCcw className="h-4 w-4" />
+                  New round
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full bg-background/70"
+                  onClick={restartMatch}
+                >
+                  <RotateCcw className="h-4 w-4" />
+                  Restart match
+                </Button>
+              </div>
+            </div>
           </div>
         </CardContent>
-
-        <CardFooter className="flex-col items-stretch gap-4">
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <Button type="button" className="flex-1" onClick={startNewRound}>
-              <RotateCcw className="h-4 w-4" />
-              New round
-            </Button>
-            <Button type="button" variant="outline" className="flex-1" onClick={restartMatch}>
-              <RotateCcw className="h-4 w-4" />
-              Restart match
-            </Button>
-          </div>
-
-          <div className="rounded-xl border border-border/60 bg-background/50 p-3 text-sm text-muted-foreground">
-            <p className="font-medium text-foreground">Quick rules</p>
-            <ul className="mt-2 space-y-1.5">
-              <li>• You always play first as X and the computer plays O.</li>
-              <li>• Make three marks in a row horizontally, vertically, or diagonally.</li>
-              <li>• New round keeps the score. Restart match clears the score.</li>
-            </ul>
-          </div>
-        </CardFooter>
       </Card>
     </div>
   );

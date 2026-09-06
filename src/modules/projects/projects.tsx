@@ -3,12 +3,13 @@
 import { useState, type ComponentType } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
-  ArrowRight,
   BookOpen,
   Brain,
   DollarSign,
   Gamepad2,
+  Info,
   Layout,
+  Play,
   Rocket,
   Sparkles,
   Users,
@@ -67,6 +68,7 @@ type GameProject = Omit<ProjectBase, "id"> & {
   component: GameComponent;
   dialogDescription: string;
   rulesSummary: string;
+  levelPills: readonly string[];
   levels: readonly string[];
   controls: readonly string[];
 };
@@ -146,6 +148,7 @@ const projectCards = portfolioProjects.map<ProjectCard>((project) => {
           "Strategy duel against the computer with persistent score tracking and accessible play.",
         rulesSummary:
           "Place three marks in a row before the computer does, and keep the match score climbing.",
+        levelPills: ["Easy", "Medium", "Hard"],
         levels: [
           "Easy: random legal moves for a relaxed round.",
           "Medium: tactical responses mixed with unpredictability.",
@@ -169,6 +172,7 @@ const projectCards = portfolioProjects.map<ProjectCard>((project) => {
           "Responsive arcade run with local high-score tracking, touch support, and escalating pace.",
         rulesSummary:
           "Collect food, grow longer, avoid walls and your own tail, and survive the speed increase.",
+        levelPills: ["Level 1+", "Faster pace", "Score boost"],
         levels: [
           "Level increases every 4 food pickups.",
           "Game speed accelerates as levels rise.",
@@ -193,6 +197,7 @@ const projectCards = portfolioProjects.map<ProjectCard>((project) => {
           "Asteroid-dodging survival challenge with persistent best results and responsive controls.",
         rulesSummary:
           "Dodge incoming asteroids, protect your three lives, and stay alive long enough to reach higher levels.",
+        levelPills: ["10 levels", "3 lives", "Speed boost"],
         levels: [
           "Advance one level every 15 seconds survived.",
           "Asteroid speed and spawn pressure intensify up to level 10.",
@@ -235,6 +240,7 @@ function renderTagGroup(tags: readonly string[]) {
 
 export function ProjectsSection() {
   const [selectedGameId, setSelectedGameId] = useState<GameProjectId | null>(null);
+  const [rulesGameId, setRulesGameId] = useState<GameProjectId | null>(null);
 
   const selectedGame =
     selectedGameId === null
@@ -242,6 +248,10 @@ export function ProjectsSection() {
       : gameProjects.find((project) => project.id === selectedGameId) ?? null;
 
   const SelectedGameComponent = selectedGame?.component;
+  const rulesGame =
+    rulesGameId === null
+      ? null
+      : gameProjects.find((project) => project.id === rulesGameId) ?? null;
 
   return (
     <section id="projects" className="relative section-padding">
@@ -353,21 +363,17 @@ export function ProjectsSection() {
               </div>
             </div>
 
-            <div className="grid gap-5 xl:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {gameProjects.map((project, index) => {
                 const Icon = project.icon;
 
                 return (
-                  <button
+                  <article
                     key={project.id}
-                    type="button"
-                    onClick={() => setSelectedGameId(project.id)}
-                    aria-haspopup="dialog"
-                    aria-label={`Play ${project.title}`}
-                    className="group gradient-border hover-lift reveal h-full rounded-[calc(var(--radius-xl)+2px)] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70"
+                    className="group gradient-border hover-lift reveal h-full rounded-[calc(var(--radius-xl)+2px)]"
                     style={{ transitionDelay: `${index * 0.08}s` }}
                   >
-                    <div className="relative flex h-full flex-col overflow-hidden rounded-[var(--radius-xl)] bg-card/80 p-6">
+                    <div className="relative flex h-full min-h-64 flex-col overflow-hidden rounded-[var(--radius-xl)] bg-card/80 p-5">
                       <div
                         className={cn(
                           "absolute -right-14 -top-14 h-32 w-32 rounded-full bg-gradient-to-br opacity-25 blur-3xl transition-transform duration-500 group-hover:scale-110",
@@ -375,13 +381,13 @@ export function ProjectsSection() {
                         )}
                       />
 
-                      <div className="relative flex h-full flex-col gap-5">
+                      <div className="relative flex h-full flex-col gap-4">
                         <div className="flex items-start justify-between gap-4">
                           <div>
                             <p className="text-xs font-semibold tracking-[0.24em] text-muted-foreground uppercase">
                               {project.eyebrow}
                             </p>
-                            <h4 className="mt-2 font-heading text-2xl font-bold text-foreground">
+                            <h4 className="mt-1 font-heading text-xl font-bold text-foreground">
                               {project.title}
                             </h4>
                           </div>
@@ -395,61 +401,38 @@ export function ProjectsSection() {
                           </div>
                         </div>
 
-                        <p className="text-sm leading-7 text-muted-foreground">
-                          {project.description}
-                        </p>
-
-                        <div className="glass rounded-2xl p-4">
-                          <p className="text-xs font-semibold tracking-[0.22em] text-muted-foreground uppercase">
-                            Rules summary
-                          </p>
-                          <p className="mt-2 text-sm leading-6 text-foreground/90">
-                            {project.rulesSummary}
-                          </p>
+                        <div className="flex flex-wrap gap-2">
+                          {project.levelPills.map((level) => (
+                            <span
+                              key={level}
+                              className="rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"
+                            >
+                              {level}
+                            </span>
+                          ))}
                         </div>
 
-                        <div className="grid gap-3 sm:grid-cols-2">
-                          <div className="glass rounded-2xl p-4">
-                            <p className="text-xs font-semibold tracking-[0.22em] text-muted-foreground uppercase">
-                              Levels
-                            </p>
-                            <ul className="mt-3 space-y-2 text-sm leading-6 text-muted-foreground">
-                              {project.levels.map((level) => (
-                                <li key={level} className="flex gap-2">
-                                  <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary" />
-                                  <span>{level}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-
-                          <div className="glass rounded-2xl p-4">
-                            <p className="text-xs font-semibold tracking-[0.22em] text-muted-foreground uppercase">
-                              Controls
-                            </p>
-                            <ul className="mt-3 space-y-2 text-sm leading-6 text-muted-foreground">
-                              {project.controls.map((control) => (
-                                <li key={control} className="flex gap-2">
-                                  <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-accent" />
-                                  <span>{control}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        </div>
-
-                        <div className="mt-auto flex items-center justify-between rounded-2xl border border-primary/20 bg-primary/10 px-4 py-3 text-sm font-medium text-foreground">
-                          <span className="inline-flex items-center gap-2">
-                            <Gamepad2 className="h-4 w-4" />
+                        <div className="mt-auto grid grid-cols-2 gap-2 pt-2">
+                          <button
+                            type="button"
+                            onClick={() => setRulesGameId(project.id)}
+                            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-border bg-background/70 px-3 text-sm font-semibold text-foreground transition hover:border-primary/50 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70"
+                          >
+                            <Info className="h-4 w-4" />
+                            Rules
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setSelectedGameId(project.id)}
+                            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-primary px-3 text-sm font-semibold text-primary-foreground transition hover:bg-primary/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70"
+                          >
+                            <Play className="h-4 w-4" />
                             Play Game
-                          </span>
-                          <ArrowRight className="h-4 w-4" />
+                          </button>
                         </div>
-
-                        <div>{renderTagGroup(project.tags)}</div>
                       </div>
                     </div>
-                  </button>
+                  </article>
                 );
               })}
             </div>
@@ -465,16 +448,75 @@ export function ProjectsSection() {
           }
         }}
       >
-        <DialogContent className="max-h-[92dvh] max-w-5xl border-glass-border/70 bg-background/95 p-0 backdrop-blur-xl">
+        <DialogContent className="h-[calc(100dvh-1rem)] max-h-[54rem] max-w-4xl border-glass-border/70 bg-background/95 p-0 backdrop-blur-xl sm:h-[calc(100dvh-2rem)]">
           {selectedGame && SelectedGameComponent ? (
             <>
-              <DialogHeader className="bg-gradient-to-r from-background via-background/95 to-background/90">
-                <DialogTitle>{selectedGame.title}</DialogTitle>
-                <DialogDescription>{selectedGame.dialogDescription}</DialogDescription>
+              <DialogHeader className="flex-row items-center justify-between bg-gradient-to-r from-background via-background/95 to-background/90 py-3">
+                <div>
+                  <DialogTitle className="text-lg">{selectedGame.title}</DialogTitle>
+                  <DialogDescription className="sr-only">
+                    {selectedGame.dialogDescription}
+                  </DialogDescription>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedGameId(null);
+                    setRulesGameId(selectedGame.id);
+                  }}
+                  className="mr-10 inline-flex h-9 items-center gap-2 rounded-lg border border-border bg-background/70 px-3 text-xs font-semibold transition hover:border-primary/50 hover:bg-primary/5"
+                >
+                  <Info className="size-4" />
+                  Rules
+                </button>
               </DialogHeader>
 
-              <div className="min-h-0 overflow-y-auto px-4 py-4 sm:px-6 sm:py-6">
+              <div className="min-h-0 flex-1 overflow-y-auto p-2 sm:p-3">
                 <SelectedGameComponent />
+              </div>
+            </>
+          ) : null}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={rulesGame !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setRulesGameId(null);
+          }
+        }}
+      >
+        <DialogContent className="max-w-md border-glass-border/70 bg-background/98 p-0 backdrop-blur-xl">
+          {rulesGame ? (
+            <>
+              <DialogHeader>
+                <DialogTitle>{rulesGame.title} Rules</DialogTitle>
+                <DialogDescription>{rulesGame.rulesSummary}</DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 p-5 text-sm">
+                <section>
+                  <h4 className="font-heading font-bold text-foreground">Levels</h4>
+                  <ul className="mt-2 space-y-1.5 text-muted-foreground">
+                    {rulesGame.levels.map((level) => (
+                      <li key={level} className="flex gap-2">
+                        <span className="mt-2 size-1.5 shrink-0 rounded-full bg-primary" />
+                        {level}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+                <section>
+                  <h4 className="font-heading font-bold text-foreground">Controls</h4>
+                  <ul className="mt-2 space-y-1.5 text-muted-foreground">
+                    {rulesGame.controls.map((control) => (
+                      <li key={control} className="flex gap-2">
+                        <span className="mt-2 size-1.5 shrink-0 rounded-full bg-accent" />
+                        {control}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
               </div>
             </>
           ) : null}

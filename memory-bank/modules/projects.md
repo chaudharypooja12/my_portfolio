@@ -22,15 +22,18 @@ The featured grid renders these four original work items as standard cards:
 
 ## Playable Demo Card + Dialog Behavior
 
-- Each playable card is a full-width button with `aria-haspopup="dialog"`.
-- Clicking a card sets `selectedGameId`, finds the matching game definition, and
-  opens the shared dialog from `src/components/ui/dialog.tsx`.
-- The dialog header shows the selected game's title and `dialogDescription`.
+- Each playable card uses a compact layout with title, icon, level pills, and
+  separate **Rules** and **Play Game** actions.
+- The Rules action opens a small dialog containing the full rules, levels, and
+  controls, keeping cards free of text-heavy detail.
+- Play Game opens the shared game dialog from `src/components/ui/dialog.tsx`.
+- The game dialog is viewport-clamped, internally scrollable only when required,
+  and uses a compact title bar plus Rules shortcut.
 - Only the selected game component mounts in the dialog body, so inactive games
   do not run in the background.
 - Closing the dialog resets `selectedGameId` to `null`.
 - The shared dialog supplies a blurred overlay, bordered popup shell, and an
-  explicit close button labeled **Close game**.
+  explicit red close button with a white X labeled **Close game**.
 
 ## Playable Demo 1 — Tic-tac-toe
 
@@ -40,6 +43,8 @@ The featured grid renders these four original work items as standard cards:
 - Player always moves first
 - Status text is announced through a live region
 - Board uses `role="grid"` with labeled squares for accessible play
+- High-contrast colored grid lines and cells keep the 3×3 board clearly visible
+- Difficulty controls and round actions are centered in the compact modal layout
 
 ### Difficulty
 
@@ -85,6 +90,8 @@ The featured grid renders these four original work items as standard cards:
 - Keyboard: arrow keys or WASD
 - Touch: on-screen four-direction pad
 - Window blur or a hidden tab auto-pauses the game
+- Snake body uses green gradients and food uses an apple emoticon
+- Touch controls and game actions are centered below the compact board
 
 ### Persistence
 
@@ -120,6 +127,9 @@ The featured grid renders these four original work items as standard cards:
 - Touch: hold the on-screen direction pad to strafe
 - Window blur or hidden tab auto-pauses the game
 - Pausing freezes any remaining post-hit shield time until play resumes
+- The focused playfield captures movement keys so arrow presses do not scroll
+  the page
+- Playfield height is viewport-clamped with centered touch controls and actions
 
 ### Persistence
 

@@ -74,14 +74,18 @@ Scroll-reveal: IntersectionObserver adds `revealed` class.
 - Featured work uses a responsive two-column glass-card grid.
 - Playable demos use one card per column on small screens and three columns on
   wide screens.
-- Each game card includes a rules summary, levels, controls, tags, and a clear
-  Play Game action.
-- Games open in a centered, scrollable dialog capped at 92dvh so controls remain
-  usable on mobile and desktop.
+- Each game card uses a minimalist title/icon treatment, level pills, and Rules
+  plus Play Game actions.
+- Rules, detailed levels, and controls live in a separate compact dialog.
+- Games open in a centered dialog sized against `dvh`; game boards are
+  independently viewport-clamped so controls remain visible on mobile and
+  desktop.
 - The overlay uses a dark translucent backdrop and blur while the popup retains
   the current light/dark theme tokens.
 - Only the selected game mounts, preventing hidden animation loops and input
   listeners.
+- Dialog close controls use a red background and white X for immediate visual
+  recognition.
 
 ## Accessibility
 

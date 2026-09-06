@@ -52,12 +52,20 @@ const STATUS_LABELS: Record<GameStatus, string> = {
   paused: "Paused",
   over: "Game Over",
 };
-const STAR_POINTS = Array.from({ length: 18 }, (_, index) => ({
+const STAR_POINTS = Array.from({ length: 24 }, (_, index) => ({
   id: index,
   left: `${((index * 31) % 91) + 4}%`,
   top: `${((index * 47) % 80) + 8}%`,
-  size: 2 + (index % 3),
-  opacity: 0.2 + (index % 5) * 0.12,
+  size: 2 + (index % 4),
+  opacity: 0.22 + (index % 5) * 0.11,
+  className:
+    index % 4 === 0
+      ? "bg-accent"
+      : index % 4 === 1
+        ? "bg-primary"
+        : index % 4 === 2
+          ? "bg-nebula-2"
+          : "bg-white",
 }));
 
 type GameStatus = "ready" | "running" | "paused" | "over";
@@ -139,10 +147,6 @@ function getShipSpeed(dimensions: Dimensions) {
 
 function getLevelForElapsed(elapsedMs: number) {
   return clamp(1 + Math.floor(elapsedMs / LEVEL_MILESTONE_MS), 1, MAX_LEVEL);
-}
-
-function getNextLevelAt(level: number) {
-  return level >= MAX_LEVEL ? null : level * LEVEL_MILESTONE_MS;
 }
 
 function getSpawnInterval(level: number) {
@@ -320,9 +324,11 @@ function ControlPadButton({
       className={[
         "flex h-12 w-12 touch-none items-center justify-center rounded-2xl border",
         "border-border/70 bg-background/75 text-foreground shadow-sm transition",
-        "hover:border-primary/60 hover:bg-muted",
+        "hover:border-primary/70 hover:bg-primary/10 hover:text-primary active:scale-[0.98]",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60",
-        active ? "border-primary/70 bg-primary/15 text-primary" : "",
+        active
+          ? "border-primary/80 bg-gradient-to-br from-primary/20 via-nebula-2/20 to-accent/20 text-primary"
+          : "",
         className,
       ].join(" ")}
       onPointerDown={handlePointerDown}
@@ -337,7 +343,10 @@ function ControlPadButton({
 }
 
 export function SpaceshipGame() {
-  const gradientId = `spaceship-body-${useId().replace(/:/g, "")}`;
+  const baseId = useId().replace(/:/g, "");
+  const gradientId = `spaceship-body-${baseId}`;
+  const instructionsId = `${baseId}-instructions`;
+  const liveStatusId = `${baseId}-status`;
   const storedStatsValue = useLocalStorageValue(STORAGE_KEY);
   const storedStats = parsePersistedStats(storedStatsValue);
   const [initialRuntime] = useState(() =>
@@ -387,6 +396,10 @@ export function SpaceshipGame() {
 
   const syncSnapshot = useCallback((nowMs: number) => {
     setSnapshot(createSnapshot(runtimeRef.current, nowMs));
+  }, []);
+
+  const focusPlayfield = useCallback(() => {
+    fieldRef.current?.focus({ preventScroll: true });
   }, []);
 
   const stopLoop = useCallback(() => {
@@ -583,7 +596,8 @@ export function SpaceshipGame() {
     clearInput();
     syncSnapshot(0);
     startLoop();
-  }, [clearInput, maybePersistProgress, startLoop, syncSnapshot]);
+    focusPlayfield();
+  }, [clearInput, focusPlayfield, maybePersistProgress, startLoop, syncSnapshot]);
 
   const pauseGame = useCallback(() => {
     const runtime = runtimeRef.current;
@@ -619,7 +633,8 @@ export function SpaceshipGame() {
     runtime.pausedInvulnerabilityMs = 0;
     syncSnapshot(performance.now());
     startLoop();
-  }, [startLoop, syncSnapshot]);
+    focusPlayfield();
+  }, [focusPlayfield, startLoop, syncSnapshot]);
 
   useEffect(() => {
     const fieldElement = fieldRef.current;
@@ -681,25 +696,49 @@ export function SpaceshipGame() {
   }, []);
 
   useEffect(() => {
+    const frameId = window.requestAnimationFrame(() => {
+      focusPlayfield();
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+    };
+  }, [focusPlayfield]);
+
+  useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.altKey || event.ctrlKey || event.metaKey) {
+        return;
+      }
+
       const direction = getDirectionFromKey(event.key);
 
-      if (!direction) {
+      if (
+        !direction ||
+        runtimeRef.current.status !== "running" ||
+        fieldRef.current !== document.activeElement
+      ) {
         return;
       }
 
       event.preventDefault();
+      event.stopPropagation();
       setDirectionPressed(direction, true);
     };
 
     const handleKeyUp = (event: KeyboardEvent) => {
+      if (event.altKey || event.ctrlKey || event.metaKey) {
+        return;
+      }
+
       const direction = getDirectionFromKey(event.key);
 
-      if (!direction) {
+      if (!direction || !inputRef.current[direction]) {
         return;
       }
 
       event.preventDefault();
+      event.stopPropagation();
       setDirectionPressed(direction, false);
     };
 
@@ -718,14 +757,14 @@ export function SpaceshipGame() {
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
+    window.addEventListener("keydown", handleKeyDown, true);
+    window.addEventListener("keyup", handleKeyUp, true);
     window.addEventListener("blur", handleWindowBlur);
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
+      window.removeEventListener("keydown", handleKeyDown, true);
+      window.removeEventListener("keyup", handleKeyUp, true);
       window.removeEventListener("blur", handleWindowBlur);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
@@ -734,81 +773,27 @@ export function SpaceshipGame() {
   useEffect(() => stopLoop, [stopLoop]);
 
   const ship = getShipMetrics(dimensions);
-  const nextLevelAt = getNextLevelAt(snapshot.level);
-  const levelProgress =
-    snapshot.level >= MAX_LEVEL
-      ? 100
-      : ((snapshot.elapsedMs % LEVEL_MILESTONE_MS) / LEVEL_MILESTONE_MS) * 100;
   const shipVisible =
     snapshot.invulnerableRemainingMs <= 0 ||
     Math.floor(snapshot.invulnerableRemainingMs / 100) % 2 === 0;
 
   return (
-    <div className="glass-strong relative overflow-hidden rounded-3xl border border-glass-border/60 p-4 shadow-[0_18px_60px_oklch(0.1_0.04_275_/_0.16)] sm:p-5">
+    <div className="glass-strong relative flex min-h-full flex-col overflow-hidden rounded-3xl border border-glass-border/60 p-3 shadow-[0_18px_60px_oklch(0.1_0.04_275_/_0.16)] sm:p-4">
       <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-primary/10 via-nebula-2/5 to-transparent" />
+      <p id={instructionsId} className="sr-only">
+        Use the arrow keys or W, A, S, and D to move the ship. Touch controls
+        and the start, pause, resume, and restart buttons are centered below the
+        game field. The game pauses automatically if the window loses focus.
+      </p>
+      <p id={liveStatusId} aria-live="polite" className="sr-only">
+        {STATUS_LABELS[snapshot.status]}. Level {snapshot.level}. Lives{" "}
+        {snapshot.lives} out of {STARTING_LIVES}.
+        {snapshot.invulnerableRemainingMs > 0 ? " Shield active." : ""}
+      </p>
 
-      <div className="relative space-y-4">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <div className="rounded-2xl bg-primary/12 p-2 text-primary">
-                <Shield className="h-5 w-5" />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-foreground">
-                  Spaceship Survival
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  Dodge the asteroid storm and stay alive long enough to rank up.
-                </p>
-              </div>
-            </div>
-
-            <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-              Move with arrows or WASD, or hold the touch pad. Survive 15 seconds
-              per level, use your 3 lives wisely, and exploit the short shield
-              pulse after a hit.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {(snapshot.status === "ready" || snapshot.status === "over") && (
-              <Button onClick={startGame}>
-                <Play className="h-4 w-4" />
-                {snapshot.status === "over" ? "Play Again" : "Start Game"}
-              </Button>
-            )}
-
-            {snapshot.status === "running" && (
-              <>
-                <Button variant="secondary" onClick={pauseGame}>
-                  <Pause className="h-4 w-4" />
-                  Pause
-                </Button>
-                <Button variant="outline" onClick={startGame}>
-                  <RotateCcw className="h-4 w-4" />
-                  Restart
-                </Button>
-              </>
-            )}
-
-            {snapshot.status === "paused" && (
-              <>
-                <Button variant="secondary" onClick={resumeGame}>
-                  <Play className="h-4 w-4" />
-                  Resume
-                </Button>
-                <Button variant="outline" onClick={startGame}>
-                  <RotateCcw className="h-4 w-4" />
-                  Restart
-                </Button>
-              </>
-            )}
-          </div>
-        </div>
-
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <div className="rounded-2xl border border-border/70 bg-background/65 p-3">
+      <div className="relative flex min-h-0 flex-1 flex-col gap-3">
+        <div className="grid grid-cols-2 gap-2 xl:grid-cols-4">
+          <div className="rounded-2xl border border-border/70 bg-background/65 p-2.5">
             <div className="flex items-center gap-2 text-muted-foreground">
               <Timer className="h-4 w-4" />
               <span className="text-xs font-medium uppercase tracking-[0.18em]">
@@ -820,7 +805,7 @@ export function SpaceshipGame() {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-border/70 bg-background/65 p-3">
+          <div className="rounded-2xl border border-border/70 bg-background/65 p-2.5">
             <div className="flex items-center gap-2 text-muted-foreground">
               <Trophy className="h-4 w-4" />
               <span className="text-xs font-medium uppercase tracking-[0.18em]">
@@ -832,7 +817,7 @@ export function SpaceshipGame() {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-border/70 bg-background/65 p-3">
+          <div className="rounded-2xl border border-border/70 bg-background/65 p-2.5">
             <div className="flex items-center gap-2 text-muted-foreground">
               <Shield className="h-4 w-4" />
               <span className="text-xs font-medium uppercase tracking-[0.18em]">
@@ -847,7 +832,7 @@ export function SpaceshipGame() {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-border/70 bg-background/65 p-3">
+          <div className="rounded-2xl border border-border/70 bg-background/65 p-2.5">
             <div className="flex items-center gap-2 text-muted-foreground">
               <Layers className="h-4 w-4" />
               <span className="text-xs font-medium uppercase tracking-[0.18em]">
@@ -863,47 +848,29 @@ export function SpaceshipGame() {
           </div>
         </div>
 
-        <div className="rounded-3xl border border-border/70 bg-background/40 p-3 shadow-[inset_0_1px_0_oklch(1_0_0_/_0.08)]">
-          <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <p className="text-sm font-medium text-foreground">
-                Current level: {snapshot.level}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {nextLevelAt === null
-                  ? "Difficulty capped: you've reached the final level."
-                  : `Next level at ${formatSeconds(nextLevelAt)}.`}
-              </p>
-            </div>
-
-            <div className="min-w-44 flex-1 sm:max-w-xs">
-              <div className="mb-1 flex items-center justify-between text-xs uppercase tracking-[0.18em] text-muted-foreground">
-                <span>Level progress</span>
-                <span>{Math.round(levelProgress)}%</span>
-              </div>
-              <div className="h-2 overflow-hidden rounded-full bg-muted">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-primary via-nebula-2 to-accent transition-[width]"
-                  style={{ width: `${levelProgress}%` }}
-                />
-              </div>
-            </div>
-          </div>
-
+        <div className="flex min-h-0 flex-1 flex-col gap-3 rounded-3xl border border-border/70 bg-background/40 p-2 shadow-[inset_0_1px_0_oklch(1_0_0_/_0.08)] sm:p-3">
           <div
             ref={fieldRef}
-            className="relative aspect-[16/10] w-full min-h-[18rem] overflow-hidden rounded-[calc(var(--radius-3xl)-2px)] border border-border/70 bg-background"
+            tabIndex={0}
+            role="region"
+            aria-label="Spaceship Survival playfield"
+            aria-describedby={`${instructionsId} ${liveStatusId}`}
+            onPointerDown={focusPlayfield}
+            onBlur={clearInput}
+            className="relative h-[clamp(13rem,30dvh,20rem)] w-full overflow-hidden rounded-[calc(var(--radius-3xl)-2px)] border border-border/70 bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 sm:h-[clamp(14rem,38dvh,22rem)]"
           >
-            <div className="absolute inset-0 bg-gradient-to-b from-background via-background/70 to-background/90" />
-            <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-nebula-2/15 via-primary/10 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-primary/10 via-accent/5 to-transparent" />
-            <div className="absolute left-[10%] top-[8%] h-24 w-24 rounded-full bg-nebula-2/10 blur-3xl" />
-            <div className="absolute bottom-[10%] right-[14%] h-28 w-28 rounded-full bg-accent/10 blur-3xl" />
+            <div className="absolute inset-0 bg-gradient-to-b from-background via-background/90 to-background/95" />
+            <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-nebula-2/20 via-primary/12 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-accent/14 via-primary/8 to-transparent" />
+            <div className="absolute left-[8%] top-[10%] h-28 w-28 rounded-full bg-nebula-2/18 blur-3xl" />
+            <div className="absolute right-[14%] top-[12%] h-20 w-20 rounded-full bg-primary/16 blur-3xl" />
+            <div className="absolute bottom-[12%] right-[12%] h-32 w-32 rounded-full bg-accent/14 blur-3xl" />
+            <div className="absolute bottom-[18%] left-[16%] h-24 w-24 rounded-full bg-amber-300/12 blur-3xl" />
 
             {STAR_POINTS.map((star) => (
               <span
                 key={star.id}
-                className="absolute rounded-full bg-primary"
+                className={`absolute rounded-full ${star.className}`}
                 style={{
                   left: star.left,
                   top: star.top,
@@ -921,10 +888,10 @@ export function SpaceshipGame() {
                 key={asteroid.id}
                 className={
                   asteroid.variant === 0
-                    ? "absolute text-foreground/40"
+                    ? "absolute text-amber-200/70"
                     : asteroid.variant === 1
-                      ? "absolute text-primary/35"
-                      : "absolute text-accent/35"
+                      ? "absolute text-primary/60"
+                      : "absolute text-cyan-200/60"
                 }
                 style={{
                   left: `${asteroid.x - asteroid.size / 2}px`,
@@ -955,8 +922,8 @@ export function SpaceshipGame() {
                 opacity: shipVisible ? 1 : 0.35,
                 filter:
                   snapshot.invulnerableRemainingMs > 0
-                    ? "drop-shadow(0 0 18px var(--accent))"
-                    : "drop-shadow(0 0 16px var(--primary))",
+                    ? "drop-shadow(0 0 20px var(--accent))"
+                    : "drop-shadow(0 0 18px var(--primary))",
               }}
             >
               <svg viewBox="0 0 100 72" className="h-full w-full">
@@ -980,6 +947,11 @@ export function SpaceshipGame() {
                   fill="var(--accent)"
                   opacity="0.92"
                 />
+                <path
+                  d="M44 63 50 71 56 63 54 56 46 56Z"
+                  fill="var(--nebula-2)"
+                  opacity={snapshot.status === "running" ? "0.95" : "0.62"}
+                />
                 <circle cx="50" cy="27" r="8" fill="var(--background)" opacity="0.9" />
                 <path
                   d="M48 12 52 12 56 22 50 30 44 22Z"
@@ -997,75 +969,100 @@ export function SpaceshipGame() {
                   </p>
                   <h4 className="mt-2 text-xl font-semibold text-foreground">
                     {snapshot.status === "ready"
-                      ? "Launch when ready"
+                      ? "Ready to launch"
                       : snapshot.status === "paused"
                         ? "Game paused"
                         : "Hull breached"}
                   </h4>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  <p className="mt-2 text-sm text-muted-foreground">
                     {snapshot.status === "over"
-                      ? `You survived ${formatSeconds(snapshot.elapsedMs)} and reached level ${snapshot.level}.`
-                      : "Asteroids keep accelerating every 15 seconds, so stay moving."}
+                      ? `${formatSeconds(snapshot.elapsedMs)} survived • Level ${snapshot.level}`
+                      : snapshot.status === "paused"
+                        ? "Resume below when ready."
+                        : "Press Start below."}
                   </p>
                 </div>
               </div>
             )}
-
-            <div className="absolute left-3 top-3 flex items-center gap-2 rounded-full border border-border/60 bg-background/70 px-3 py-1 text-xs text-muted-foreground backdrop-blur">
-              <span className="font-medium text-foreground">
-                {STATUS_LABELS[snapshot.status]}
-              </span>
-              {snapshot.invulnerableRemainingMs > 0 && (
-                <>
-                  <span className="h-1 w-1 rounded-full bg-accent" />
-                  <span className="text-accent">Shielded</span>
-                </>
-              )}
-            </div>
           </div>
-        </div>
 
-        <div className="flex flex-col gap-4 rounded-3xl border border-border/70 bg-background/50 p-4 md:flex-row md:items-center md:justify-between">
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-foreground">Touch controls</p>
-            <p className="max-w-md text-sm text-muted-foreground">
-              Hold a direction to strafe. Keyboard and touch controls work together,
-              so you can swap inputs anytime.
+          <div
+            className="flex flex-col items-center gap-3 rounded-3xl border border-border/70 bg-background/50 p-4"
+            onPointerDownCapture={focusPlayfield}
+          >
+            <p className="text-center text-xs text-muted-foreground">
+              Move with arrows, WASD, or the touch pad.
             </p>
-          </div>
 
-          <div className="grid grid-cols-3 gap-2 self-start">
-            <div />
-            <ControlPadButton
-              direction="up"
-              label="Move up"
-              icon={<ChevronUp className="h-5 w-5" />}
-              active={inputState.up}
-              onPressChange={setDirectionPressed}
-            />
-            <div />
+            <div className="mx-auto grid w-full max-w-[11rem] grid-cols-3 gap-2">
+              <div />
+              <ControlPadButton
+                direction="up"
+                label="Move up"
+                icon={<ChevronUp className="h-5 w-5" />}
+                active={inputState.up}
+                onPressChange={setDirectionPressed}
+              />
+              <div />
 
-            <ControlPadButton
-              direction="left"
-              label="Move left"
-              icon={<ChevronLeft className="h-5 w-5" />}
-              active={inputState.left}
-              onPressChange={setDirectionPressed}
-            />
-            <ControlPadButton
-              direction="down"
-              label="Move down"
-              icon={<ChevronDown className="h-5 w-5" />}
-              active={inputState.down}
-              onPressChange={setDirectionPressed}
-            />
-            <ControlPadButton
-              direction="right"
-              label="Move right"
-              icon={<ChevronRight className="h-5 w-5" />}
-              active={inputState.right}
-              onPressChange={setDirectionPressed}
-            />
+              <ControlPadButton
+                direction="left"
+                label="Move left"
+                icon={<ChevronLeft className="h-5 w-5" />}
+                active={inputState.left}
+                onPressChange={setDirectionPressed}
+              />
+              <ControlPadButton
+                direction="down"
+                label="Move down"
+                icon={<ChevronDown className="h-5 w-5" />}
+                active={inputState.down}
+                onPressChange={setDirectionPressed}
+              />
+              <ControlPadButton
+                direction="right"
+                label="Move right"
+                icon={<ChevronRight className="h-5 w-5" />}
+                active={inputState.right}
+                onPressChange={setDirectionPressed}
+              />
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              <Button
+                type="button"
+                size="sm"
+                onClick={startGame}
+                disabled={snapshot.status === "running" || snapshot.status === "paused"}
+              >
+                <Play className="h-4 w-4" />
+                Start
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={pauseGame}
+                disabled={snapshot.status !== "running"}
+              >
+                <Pause className="h-4 w-4" />
+                Pause
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={resumeGame}
+                disabled={snapshot.status !== "paused"}
+              >
+                <Play className="h-4 w-4" />
+                Resume
+              </Button>
+              <Button type="button" size="sm" variant="secondary" onClick={startGame}>
+                <RotateCcw className="h-4 w-4" />
+                Restart
+              </Button>
+            </div>
           </div>
         </div>
       </div>

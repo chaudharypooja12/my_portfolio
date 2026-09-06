@@ -56,7 +56,7 @@ function DialogContent({
         {children}
         <DialogPrimitive.Close
           aria-label="Close game"
-          className="absolute right-3 top-3 z-10 inline-flex size-9 items-center justify-center rounded-lg border border-border/60 bg-background/80 text-muted-foreground shadow-sm backdrop-blur transition hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="absolute right-3 top-3 z-10 inline-flex size-9 items-center justify-center rounded-lg border border-red-500 bg-red-600 text-white shadow-sm transition hover:bg-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
         >
           <X className="size-4" />
         </DialogPrimitive.Close>

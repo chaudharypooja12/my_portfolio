@@ -2,6 +2,16 @@
 
 ## Log
 
+### 2026-09-06 — Refined responsive playable game experience
+- Replaced text-heavy game cards with minimalist cards and level pills
+- Added dedicated Rules dialogs for rules, level details, and controls
+- Made game dialogs and playfields responsive to dynamic viewport height
+- Changed dialog close controls to red with a white X
+- Improved Tic-tac-toe board contrast and centered its controls/actions
+- Made Snake green and colorful with apple bait plus centered controls/actions
+- Fixed Spaceship arrow/WASD capture and prevented arrow-key page scrolling
+- Centered Spaceship controls/actions and reduced duplicate in-game text
+
 ### 2026-09-06 — Addressed game persistence and pause feedback
 - Replaced render-time localStorage reads with an SSR-safe
   `useSyncExternalStore` adapter

@@ -57,7 +57,7 @@ section that now includes playable demos alongside professional work.
 | Experience | Implemented | Professional timeline reflected in structured resume data |
 | Skills | Implemented | Skill categories reflected in structured resume data |
 | Education | Implemented | Education timeline reflected in structured resume data |
-| Projects & Work | Implemented | Four featured cards plus three playable demos |
+| Projects & Work | Implemented | Four featured cards plus three compact playable demo cards and rules dialogs |
 | Certificates | Implemented | Card-based showcase |
 | Achievements | Implemented | Highlighted academic achievement |
 | Resume Download | Implemented | Downloads generated `Pooja_Resume.pdf` |
@@ -100,6 +100,9 @@ section that now includes playable demos alongside professional work.
 - [x] Projects section includes four featured build cards
 - [x] Projects section includes three playable demo cards
 - [x] Each playable demo opens inside a dialog with title and description
+- [x] Game cards show concise level pills instead of full rules/control text
+- [x] Rules open in a separate compact dialog
+- [x] Game boards and controls fit responsive viewport-height dialogs
 - [x] Tic-tac-toe exposes three difficulty levels and match persistence for best player wins
 - [x] Snake exposes rules, touch controls, level progression, and saved best stats
 - [x] Spaceship Survival exposes rules, touch controls, level progression, shield window, and saved best stats
