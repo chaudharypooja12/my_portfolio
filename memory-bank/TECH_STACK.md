@@ -20,6 +20,7 @@
 - Custom components: Starfield, NebulaBackground, SkyBackground, CursorGlow,
   ScrollReveal, ThemeProvider, ThemeToggle, Dialog, Typewriter, StatsCounter
 - Playable React games: Tic-tac-toe, Snake, Spaceship Survival
+- SSR-safe localStorage subscriptions through `useSyncExternalStore`
 
 ## Documents and Content
 

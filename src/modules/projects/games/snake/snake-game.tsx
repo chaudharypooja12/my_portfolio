@@ -22,6 +22,10 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import {
+  setLocalStorageValue,
+  useLocalStorageValue,
+} from "@/hooks/use-local-storage-value"
 
 type Direction = "up" | "down" | "left" | "right"
 type GameStatus = "idle" | "running" | "paused" | "gameOver"
@@ -122,18 +126,12 @@ function isValidStatNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value) && value >= 0
 }
 
-function readStoredStats(): StoredStats {
-  if (typeof window === "undefined") {
+function parseStoredStats(rawValue: string | null): StoredStats {
+  if (!rawValue) {
     return DEFAULT_STATS
   }
 
   try {
-    const rawValue = window.localStorage.getItem(STORAGE_KEY)
-
-    if (!rawValue) {
-      return DEFAULT_STATS
-    }
-
     const parsed: unknown = JSON.parse(rawValue)
 
     if (typeof parsed !== "object" || parsed === null) {
@@ -157,12 +155,8 @@ function readStoredStats(): StoredStats {
 }
 
 function writeStoredStats(stats: StoredStats): void {
-  if (typeof window === "undefined") {
-    return
-  }
-
   try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(stats))
+    setLocalStorageValue(STORAGE_KEY, JSON.stringify(stats))
   } catch (error) {
     console.warn("Unable to save Snake results.", error)
   }
@@ -296,9 +290,11 @@ function getDirectionFromKey(key: string): Direction | null {
 }
 
 export function SnakeGame() {
-  const [gameState, setGameState] = useState<GameState>(() =>
-    createIdleGameState(readStoredStats())
-  )
+  const storedStatsValue = useLocalStorageValue(STORAGE_KEY)
+  const storedStats = parseStoredStats(storedStatsValue)
+  const [gameState, setGameState] = useState<GameState>(createIdleGameState)
+  const highScore = Math.max(storedStats.highScore, gameState.highScore)
+  const highestLevel = Math.max(storedStats.highestLevel, gameState.highestLevel)
 
   const intervalRef = useRef<number | null>(null)
 
@@ -340,11 +336,14 @@ export function SnakeGame() {
       }
 
       return createRunningGameState({
-        highScore: previousState.highScore,
-        highestLevel: previousState.highestLevel,
+        highScore: Math.max(storedStats.highScore, previousState.highScore),
+        highestLevel: Math.max(
+          storedStats.highestLevel,
+          previousState.highestLevel
+        ),
       })
     })
-  }, [updateGameState])
+  }, [storedStats.highScore, storedStats.highestLevel, updateGameState])
 
   const pauseGame = useCallback(() => {
     updateGameState((previousState) =>
@@ -371,11 +370,14 @@ export function SnakeGame() {
   const restartGame = useCallback(() => {
     updateGameState((previousState) =>
       createRunningGameState({
-        highScore: previousState.highScore,
-        highestLevel: previousState.highestLevel,
+        highScore: Math.max(storedStats.highScore, previousState.highScore),
+        highestLevel: Math.max(
+          storedStats.highestLevel,
+          previousState.highestLevel
+        ),
       })
     )
-  }, [updateGameState])
+  }, [storedStats.highScore, storedStats.highestLevel, updateGameState])
 
   const tick = useCallback(() => {
     updateGameState((previousState) => {
@@ -472,11 +474,25 @@ export function SnakeGame() {
   }, [updateGameState])
 
   useEffect(() => {
+    if (
+      gameState.highScore <= storedStats.highScore &&
+      gameState.highestLevel <= storedStats.highestLevel
+    ) {
+      return
+    }
+
     writeStoredStats({
-      highScore: gameState.highScore,
-      highestLevel: gameState.highestLevel,
+      highScore,
+      highestLevel,
     })
-  }, [gameState.highScore, gameState.highestLevel])
+  }, [
+    gameState.highScore,
+    gameState.highestLevel,
+    highScore,
+    highestLevel,
+    storedStats.highScore,
+    storedStats.highestLevel,
+  ])
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -587,7 +603,7 @@ export function SnakeGame() {
               </div>
               <div className="mt-1 flex items-end justify-between gap-3">
                 <span className="text-2xl font-semibold text-foreground">{gameState.score}</span>
-                <span className="text-xs text-muted-foreground">Best {gameState.highScore}</span>
+                <span className="text-xs text-muted-foreground">Best {highScore}</span>
               </div>
             </div>
 
@@ -599,7 +615,7 @@ export function SnakeGame() {
               <div className="mt-1 flex items-end justify-between gap-3">
                 <span className="text-2xl font-semibold text-foreground">{gameState.level}</span>
                 <span className="text-xs text-muted-foreground">
-                  Best {gameState.highestLevel}
+                  Best {highestLevel}
                 </span>
               </div>
             </div>

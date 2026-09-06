@@ -23,6 +23,10 @@ import {
   type ReactNode,
 } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  setLocalStorageValue,
+  useLocalStorageValue,
+} from "@/hooks/use-local-storage-value";
 
 const STORAGE_KEY = "portfolio-spaceship-survival:v1";
 const LEVEL_MILESTONE_MS = 15_000;
@@ -239,18 +243,12 @@ function sanitizePersistedStats(value: unknown): PersistedStats {
   return { bestScoreMs, bestLevel };
 }
 
-function readPersistedStats() {
-  if (typeof window === "undefined") {
+function parsePersistedStats(rawValue: string | null) {
+  if (!rawValue) {
     return DEFAULT_PERSISTED_STATS;
   }
 
   try {
-    const rawValue = window.localStorage.getItem(STORAGE_KEY);
-
-    if (!rawValue) {
-      return DEFAULT_PERSISTED_STATS;
-    }
-
     const parsed: unknown = JSON.parse(rawValue);
     return sanitizePersistedStats(parsed);
   } catch (error) {
@@ -260,12 +258,8 @@ function readPersistedStats() {
 }
 
 function writePersistedStats(stats: PersistedStats) {
-  if (typeof window === "undefined") {
-    return;
-  }
-
   try {
-    window.localStorage.setItem(
+    setLocalStorageValue(
       STORAGE_KEY,
       JSON.stringify(sanitizePersistedStats(stats))
     );
@@ -344,10 +338,18 @@ function ControlPadButton({
 
 export function SpaceshipGame() {
   const gradientId = `spaceship-body-${useId().replace(/:/g, "")}`;
+  const storedStatsValue = useLocalStorageValue(STORAGE_KEY);
+  const storedStats = parsePersistedStats(storedStatsValue);
   const [initialRuntime] = useState(() =>
     createRuntimeState(DEFAULT_DIMENSIONS, "ready")
   );
-  const [bestStats, setBestStats] = useState<PersistedStats>(readPersistedStats);
+  const [bestStats, setBestStats] = useState<PersistedStats>(
+    DEFAULT_PERSISTED_STATS
+  );
+  const displayedBestStats = {
+    bestScoreMs: Math.max(storedStats.bestScoreMs, bestStats.bestScoreMs),
+    bestLevel: Math.max(storedStats.bestLevel, bestStats.bestLevel),
+  };
   const fieldRef = useRef<HTMLDivElement | null>(null);
   const frameRef = useRef<number | null>(null);
   const runtimeRef = useRef<RuntimeState>(initialRuntime);
@@ -361,6 +363,19 @@ export function SpaceshipGame() {
     createSnapshot(initialRuntime, 0)
   );
   const [inputState, setInputState] = useState<InputState>(EMPTY_INPUT);
+
+  useEffect(() => {
+    bestStatsRef.current = {
+      bestScoreMs: Math.max(
+        bestStatsRef.current.bestScoreMs,
+        storedStats.bestScoreMs
+      ),
+      bestLevel: Math.max(
+        bestStatsRef.current.bestLevel,
+        storedStats.bestLevel
+      ),
+    };
+  }, [storedStats.bestLevel, storedStats.bestScoreMs]);
 
   const commitBestStats = useCallback((stats: PersistedStats) => {
     const sanitized = sanitizePersistedStats(stats);
@@ -813,7 +828,7 @@ export function SpaceshipGame() {
               </span>
             </div>
             <p className="mt-2 text-2xl font-semibold text-foreground">
-              {formatSeconds(bestStats.bestScoreMs)}
+              {formatSeconds(displayedBestStats.bestScoreMs)}
             </p>
           </div>
 
@@ -843,7 +858,7 @@ export function SpaceshipGame() {
               {snapshot.level}
             </p>
             <p className="text-sm text-muted-foreground">
-              Best level {Math.max(bestStats.bestLevel, 0)}
+              Best level {displayedBestStats.bestLevel}
             </p>
           </div>
         </div>

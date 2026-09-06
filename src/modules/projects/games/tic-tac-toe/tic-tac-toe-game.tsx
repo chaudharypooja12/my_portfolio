@@ -26,6 +26,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import {
+  setLocalStorageValue,
+  useLocalStorageValue,
+} from "@/hooks/use-local-storage-value";
 
 type Mark = "X" | "O";
 type CellValue = Mark | null;
@@ -43,7 +47,6 @@ interface ScoreboardState {
   player: number;
   computer: number;
   draws: number;
-  bestPlayerWins: number;
 }
 
 interface StoredBestResult {
@@ -116,56 +119,31 @@ function isValidBestResult(value: unknown): value is StoredBestResult {
   );
 }
 
-function clearBestPlayerWins() {
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  try {
-    window.localStorage.removeItem(BEST_RESULT_STORAGE_KEY);
-  } catch (error) {
-    console.warn("Unable to clear the saved Tic-tac-toe result.", error);
-  }
-}
-
-function readBestPlayerWins(): number {
-  if (typeof window === "undefined") {
+function parseBestPlayerWins(storedValue: string | null): number {
+  if (storedValue === null) {
     return 0;
   }
 
   try {
-    const storedValue = window.localStorage.getItem(BEST_RESULT_STORAGE_KEY);
-
-    if (storedValue === null) {
-      return 0;
-    }
-
     const parsedValue: unknown = JSON.parse(storedValue);
 
     if (isValidBestResult(parsedValue)) {
       return parsedValue.bestPlayerWins;
     }
-
-    clearBestPlayerWins();
   } catch (error) {
     console.warn("Unable to read the saved Tic-tac-toe result.", error);
-    clearBestPlayerWins();
   }
 
   return 0;
 }
 
 function writeBestPlayerWins(bestPlayerWins: number) {
-  if (typeof window === "undefined") {
-    return;
-  }
-
   const payload: StoredBestResult = {
     version: 1,
     bestPlayerWins,
   };
 
-  window.localStorage.setItem(BEST_RESULT_STORAGE_KEY, JSON.stringify(payload));
+  setLocalStorageValue(BEST_RESULT_STORAGE_KEY, JSON.stringify(payload));
 }
 
 function getOrderedMoves(board: readonly CellValue[]): number[] {
@@ -344,15 +322,17 @@ function getStatusText(outcome: Outcome, isComputerTurn: boolean): string {
 }
 
 export function TicTacToeGame() {
+  const storedBestResult = useLocalStorageValue(BEST_RESULT_STORAGE_KEY);
+  const savedBestPlayerWins = parseBestPlayerWins(storedBestResult);
   const [board, setBoard] = useState<CellValue[]>(() => createEmptyBoard());
   const [difficulty, setDifficulty] = useState<Difficulty>("medium");
   const [isComputerTurn, setIsComputerTurn] = useState(false);
-  const [scores, setScores] = useState<ScoreboardState>(() => ({
+  const [scores, setScores] = useState<ScoreboardState>({
     player: 0,
     computer: 0,
     draws: 0,
-    bestPlayerWins: readBestPlayerWins(),
-  }));
+  });
+  const bestPlayerWins = Math.max(savedBestPlayerWins, scores.player);
 
   const timerRef = useRef<number | null>(null);
   const scoredBoardRef = useRef<string | null>(null);
@@ -387,12 +367,7 @@ export function TicTacToeGame() {
     setIsComputerTurn(false);
     setScores((currentScores) => {
       if (outcome === "X") {
-        const player = currentScores.player + 1;
-        return {
-          ...currentScores,
-          player,
-          bestPlayerWins: Math.max(currentScores.bestPlayerWins, player),
-        };
+        return { ...currentScores, player: currentScores.player + 1 };
       }
 
       if (outcome === "O") {
@@ -437,12 +412,16 @@ export function TicTacToeGame() {
   }, [difficulty, isComputerTurn, outcome]);
 
   useEffect(() => {
+    if (scores.player <= savedBestPlayerWins) {
+      return;
+    }
+
     try {
-      writeBestPlayerWins(scores.bestPlayerWins);
+      writeBestPlayerWins(scores.player);
     } catch (error) {
       console.warn("Unable to save the Tic-tac-toe best result.", error);
     }
-  }, [scores.bestPlayerWins]);
+  }, [savedBestPlayerWins, scores.player]);
 
   const startNewRound = () => {
     if (timerRef.current !== null) {
@@ -461,7 +440,6 @@ export function TicTacToeGame() {
       player: 0,
       computer: 0,
       draws: 0,
-      bestPlayerWins: scores.bestPlayerWins,
     });
   };
 
@@ -531,7 +509,7 @@ export function TicTacToeGame() {
               },
               {
                 label: "Best saved",
-                value: scores.bestPlayerWins,
+                value: bestPlayerWins,
                 icon: Trophy,
                 accent: "text-primary",
               },

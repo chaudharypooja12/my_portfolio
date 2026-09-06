@@ -2,6 +2,13 @@
 
 ## Log
 
+### 2026-09-06 — Addressed game persistence and pause feedback
+- Replaced render-time localStorage reads with an SSR-safe
+  `useSyncExternalStore` adapter
+- Kept same-tab saved-result displays synchronized after writes
+- Applied the persistence flow to Tic-tac-toe, Snake, and Spaceship Survival
+- Confirmed Spaceship pause/resume freezes the remaining post-hit shield time
+
 ### 2026-09-06 — Rebuilt resume and added playable project demos
 - Added `src/data/portfolio.json` as structured resume and project content
 - Added `pdf-lib` generator and `npm run resume:generate`
