@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState, type ComponentType } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -54,6 +55,8 @@ type ProjectBase = PortfolioProject & {
   icon: LucideIcon;
   gradient: string;
   eyebrow: string;
+  imageSrc: string;
+  imageAlt: string;
 };
 
 type StandardProject = Omit<ProjectBase, "id"> & {
@@ -77,15 +80,50 @@ type ProjectCard = StandardProject | GameProject;
 
 const portfolioProjects = portfolioData.projects as readonly PortfolioProject[];
 
+const projectImages = {
+  portfolio: {
+    src: "/images/projects/portfolio-website.webp",
+    alt: "Desktop and mobile screens showing a cosmic glassmorphism interface.",
+  },
+  attendance: {
+    src: "/images/projects/attendance-management.webp",
+    alt: "Attendance dashboard with a calendar, employee statuses, analytics, and reports.",
+  },
+  banking: {
+    src: "/images/projects/banking-application.webp",
+    alt: "Secure financial dashboard with a bank card, account panels, coins, and a vault.",
+  },
+  education: {
+    src: "/images/projects/cs-education.webp",
+    alt: "Students learning with a coding laptop, lesson boards, flowcharts, and assessments.",
+  },
+  "tic-tac-toe": {
+    src: "/images/projects/tic-tac-toe.webp",
+    alt: "Human and robot facing a glowing three-by-three strategy board.",
+  },
+  snake: {
+    src: "/images/projects/snake-game.webp",
+    alt: "Glowing green snake moving across a cosmic arcade grid toward fruit.",
+  },
+  spaceship: {
+    src: "/images/projects/spaceship-survival.webp",
+    alt: "Spacecraft weaving through a colorful field of incoming asteroids.",
+  },
+} satisfies Record<ProjectId, { src: string; alt: string }>;
+
 function assertNever(value: never): never {
   throw new Error(`Unhandled project id: ${value}`);
 }
 
 const projectCards = portfolioProjects.map<ProjectCard>((project) => {
+  const image = projectImages[project.id];
+
   switch (project.id) {
     case "portfolio":
       return {
         ...project,
+        imageSrc: image.src,
+        imageAlt: image.alt,
         id: "portfolio",
         kind: "standard",
         icon: Layout,
@@ -99,6 +137,8 @@ const projectCards = portfolioProjects.map<ProjectCard>((project) => {
     case "attendance":
       return {
         ...project,
+        imageSrc: image.src,
+        imageAlt: image.alt,
         id: "attendance",
         kind: "standard",
         icon: Users,
@@ -112,6 +152,8 @@ const projectCards = portfolioProjects.map<ProjectCard>((project) => {
     case "banking":
       return {
         ...project,
+        imageSrc: image.src,
+        imageAlt: image.alt,
         id: "banking",
         kind: "standard",
         icon: DollarSign,
@@ -125,6 +167,8 @@ const projectCards = portfolioProjects.map<ProjectCard>((project) => {
     case "education":
       return {
         ...project,
+        imageSrc: image.src,
+        imageAlt: image.alt,
         id: "education",
         kind: "standard",
         icon: BookOpen,
@@ -138,6 +182,8 @@ const projectCards = portfolioProjects.map<ProjectCard>((project) => {
     case "tic-tac-toe":
       return {
         ...project,
+        imageSrc: image.src,
+        imageAlt: image.alt,
         id: "tic-tac-toe",
         kind: "game",
         icon: Brain,
@@ -162,6 +208,8 @@ const projectCards = portfolioProjects.map<ProjectCard>((project) => {
     case "snake":
       return {
         ...project,
+        imageSrc: image.src,
+        imageAlt: image.alt,
         id: "snake",
         kind: "game",
         icon: Gamepad2,
@@ -187,6 +235,8 @@ const projectCards = portfolioProjects.map<ProjectCard>((project) => {
     case "spaceship":
       return {
         ...project,
+        imageSrc: image.src,
+        imageAlt: image.alt,
         id: "spaceship",
         kind: "game",
         icon: Rocket,
@@ -286,10 +336,10 @@ export function ProjectsSection() {
                 return (
                   <article
                     key={project.id}
-                    className="gradient-border hover-lift reveal h-full"
+                    className="group gradient-border hover-lift reveal h-full"
                     style={{ transitionDelay: `${index * 0.08}s` }}
                   >
-                    <div className="relative flex h-full flex-col overflow-hidden rounded-[var(--radius-xl)] bg-card/80 p-6">
+                    <div className="relative flex h-full flex-col overflow-hidden rounded-[var(--radius-xl)] bg-card/80">
                       <div
                         className={cn(
                           "absolute -right-16 -top-16 h-36 w-36 rounded-full bg-gradient-to-br opacity-20 blur-3xl",
@@ -303,7 +353,24 @@ export function ProjectsSection() {
                         )}
                       />
 
-                      <div className="relative flex h-full flex-col gap-5">
+                      <div className="relative aspect-video shrink-0 overflow-hidden border-b border-glass-border/60 bg-muted">
+                        <Image
+                          src={project.imageSrc}
+                          alt={project.imageAlt}
+                          width={1600}
+                          height={900}
+                          sizes="(max-width: 767px) calc(100vw - 2rem), 50vw"
+                          className="h-full w-full object-cover transition duration-700 ease-out motion-safe:group-hover:scale-[1.04]"
+                        />
+                        <div
+                          className={cn(
+                            "pointer-events-none absolute inset-0 bg-gradient-to-t opacity-35 transition-opacity duration-500 group-hover:opacity-15",
+                            project.gradient,
+                          )}
+                        />
+                      </div>
+
+                      <div className="relative flex h-full flex-col gap-5 p-6">
                         <div className="flex items-start justify-between gap-4">
                           <div>
                             <p className="text-xs font-semibold tracking-[0.24em] text-muted-foreground uppercase">
@@ -373,7 +440,7 @@ export function ProjectsSection() {
                     className="group gradient-border hover-lift reveal h-full rounded-[calc(var(--radius-xl)+2px)]"
                     style={{ transitionDelay: `${index * 0.08}s` }}
                   >
-                    <div className="relative flex h-full min-h-64 flex-col overflow-hidden rounded-[var(--radius-xl)] bg-card/80 p-5">
+                    <div className="relative flex h-full min-h-64 flex-col overflow-hidden rounded-[var(--radius-xl)] bg-card/80">
                       <div
                         className={cn(
                           "absolute -right-14 -top-14 h-32 w-32 rounded-full bg-gradient-to-br opacity-25 blur-3xl transition-transform duration-500 group-hover:scale-110",
@@ -381,7 +448,24 @@ export function ProjectsSection() {
                         )}
                       />
 
-                      <div className="relative flex h-full flex-col gap-4">
+                      <div className="relative aspect-video shrink-0 overflow-hidden border-b border-glass-border/60 bg-muted">
+                        <Image
+                          src={project.imageSrc}
+                          alt={project.imageAlt}
+                          width={1600}
+                          height={900}
+                          sizes="(max-width: 639px) calc(100vw - 2rem), (max-width: 1279px) 50vw, 33vw"
+                          className="h-full w-full object-cover transition duration-700 ease-out motion-safe:group-hover:scale-[1.05] motion-safe:group-focus-within:scale-[1.05]"
+                        />
+                        <div
+                          className={cn(
+                            "pointer-events-none absolute inset-0 bg-gradient-to-t opacity-40 transition-opacity duration-500 group-hover:opacity-20 group-focus-within:opacity-20",
+                            project.gradient,
+                          )}
+                        />
+                      </div>
+
+                      <div className="relative flex h-full flex-col gap-4 p-5">
                         <div className="flex items-start justify-between gap-4">
                           <div>
                             <p className="text-xs font-semibold tracking-[0.24em] text-muted-foreground uppercase">

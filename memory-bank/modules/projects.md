@@ -13,17 +13,37 @@ the section into:
 
 The featured grid renders these four original work items as standard cards:
 
-| ID | Title | Eyebrow | Highlights | Tags |
-|---|---|---|---|---|
-| `portfolio` | Portfolio Website | Flagship build | Cosmic glassmorphism, responsive light/dark themes | Next.js, TypeScript, Tailwind CSS, shadcn/ui |
-| `attendance` | Attendance Management System | Operations workflow | Daily attendance tracking, reporting-focused review flow | Employee Tracking, Management System, Reporting |
-| `banking` | Banking Application | Core application | Account opening, balance enquiry | Account Opening, Balance Enquiry, Financial |
-| `education` | CS Education & Teaching | Teaching practice | Curriculum design, assessments, mentoring | Curriculum Design, Teaching, Student Engagement |
+| ID | Title | Image | Eyebrow | Highlights | Tags |
+|---|---|---|---|---|---|
+| `portfolio` | Portfolio Website | `portfolio-website.webp` | Flagship build | Cosmic glassmorphism, responsive light/dark themes | Next.js, TypeScript, Tailwind CSS, shadcn/ui |
+| `attendance` | Attendance Management System | `attendance-management.webp` | Operations workflow | Daily attendance tracking, reporting-focused review flow | Employee Tracking, Management System, Reporting |
+| `banking` | Banking Application | `banking-application.webp` | Core application | Account opening, balance enquiry | Account Opening, Balance Enquiry, Financial |
+| `education` | CS Education & Teaching | `cs-education.webp` | Teaching practice | Curriculum design, assessments, mentoring | Curriculum Design, Teaching, Student Engagement |
+
+## Project Images
+
+- All seven card images live in `public/images/projects/` as optimized 1600×900 WebP assets.
+- Featured cards use responsive two-column image sizing; game cards account for their one-column layout below the three-column desktop breakpoint.
+- Images reserve their 16:9 aspect ratio to avoid layout shift.
+- Hover and keyboard focus gently scale game artwork and reduce its color overlay; featured artwork uses the same restrained hover treatment.
+- Every image has project-specific alternative text, and motion effects use reduced-motion-aware utilities.
+
+| Project | Asset |
+|---|---|
+| Portfolio Website | `portfolio-website.webp` |
+| Attendance Management System | `attendance-management.webp` |
+| Banking Application | `banking-application.webp` |
+| CS Education & Teaching | `cs-education.webp` |
+| Tic-tac-toe | `tic-tac-toe.webp` |
+| Snake | `snake-game.webp` |
+| Spaceship Survival | `spaceship-survival.webp` |
 
 ## Playable Demo Card + Dialog Behavior
 
 - Each playable card uses a compact layout with title, icon, level pills, and
   separate **Rules** and **Play Game** actions.
+- Each playable card includes a responsive 16:9 project preview above its compact
+  controls.
 - The Rules action opens a small dialog containing the full rules, levels, and
   controls, keeping cards free of text-heavy detail.
 - Play Game opens the shared game dialog from `src/components/ui/dialog.tsx`.
