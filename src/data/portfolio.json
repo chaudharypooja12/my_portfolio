@@ -1,0 +1,137 @@
+{
+  "profile": {
+    "name": "Pooja Chaudhary",
+    "title": "Computer Science Teacher & Full-Stack Developer",
+    "email": "poojachaudhary0912@gmail.com",
+    "linkedin": "linkedin.com/in/pooja-chaudhary-001527230",
+    "github": "github.com/chaudharypooja12",
+    "summary": "M.Sc. Computer Science post-graduate with professional experience in coding education, technical consulting, and full-stack web development. Skilled in teaching programming through engaging, practical lessons and in building responsive applications with Next.js, JavaScript, REST APIs, and relational databases."
+  },
+  "experience": [
+    {
+      "role": "Coding Teacher",
+      "company": "Codingal",
+      "date": "April 2024 - Present",
+      "responsibilities": [
+        "Teach C++, Python, and JavaScript through interactive coding sessions.",
+        "Develop engaging curriculum and mentor students in problem-solving."
+      ]
+    },
+    {
+      "role": "Technical Consultant (Freelancer)",
+      "company": "Self-Employed",
+      "date": "March 2024 - Present",
+      "responsibilities": [
+        "Build Python and Next.js projects and provide technical consulting to clients.",
+        "Develop full-stack applications, RESTful APIs, and database solutions."
+      ]
+    },
+    {
+      "role": "Teacher - Computer Science",
+      "company": "GD Goenka Public School, Jhajjar",
+      "date": "April 2023 - March 2024",
+      "responsibilities": [
+        "Developed and delivered Computer Science lessons using hands-on learning.",
+        "Conducted assessments, adapted teaching strategies, and supported extracurricular activities."
+      ]
+    }
+  ],
+  "education": [
+    {
+      "degree": "M.Sc. Computer Science",
+      "institution": "Maharshi Dayanand University, Rohtak",
+      "date": "Aug 2020 - Aug 2022",
+      "grade": "First Division"
+    },
+    {
+      "degree": "B.Sc. (General)",
+      "institution": "Maharshi Dayanand University, Rohtak",
+      "date": "Aug 2016 - Jun 2019",
+      "grade": "First Division"
+    },
+    {
+      "degree": "12th, Computer Science",
+      "institution": "Ganga International School",
+      "date": "Jun 2015 - Mar 2016",
+      "grade": "First Division"
+    },
+    {
+      "degree": "10th",
+      "institution": "Ganga International School",
+      "date": "Jun 2013 - Mar 2014",
+      "grade": "First Division"
+    }
+  ],
+  "skills": [
+    {
+      "category": "Frontend",
+      "items": ["Next.js", "JavaScript", "TypeScript", "Tailwind CSS", "shadcn/ui", "HTML"]
+    },
+    {
+      "category": "Backend & Databases",
+      "items": ["REST APIs", "Supabase", "Resend", "PostgreSQL", "SQL", "MySQL"]
+    },
+    {
+      "category": "Programming",
+      "items": ["Python", "C", "C++", "Visual Basic"]
+    },
+    {
+      "category": "AI & Automation",
+      "items": ["ChatGPT", "Claude Code", "Gemini", "Meta AI", "OpenAI", "AI Automation"]
+    },
+    {
+      "category": "Tools",
+      "items": ["VS Code", "Cursor IDE", "OpenCode", "GitHub", "Vercel", "MS Office", "Gamma", "Google Flow"]
+    },
+    {
+      "category": "Professional",
+      "items": ["Problem Solving", "Analytical Thinking", "Communication", "Adaptability", "Teaching"]
+    }
+  ],
+  "projects": [
+    {
+      "id": "portfolio",
+      "title": "Portfolio Website",
+      "description": "Cosmic galaxy-themed responsive portfolio with animated visual effects, accessible UI, light and dark themes, and Vercel deployment.",
+      "tags": ["Next.js", "TypeScript", "Tailwind CSS", "shadcn/ui"]
+    },
+    {
+      "id": "attendance",
+      "title": "Attendance Management System",
+      "description": "Application for efficiently tracking and reporting employee attendance.",
+      "tags": ["Employee Tracking", "Management System", "Reporting"]
+    },
+    {
+      "id": "banking",
+      "title": "Banking Application",
+      "description": "Account management application with account opening and balance enquiry features.",
+      "tags": ["Account Opening", "Balance Enquiry", "Financial"]
+    },
+    {
+      "id": "education",
+      "title": "CS Education & Teaching",
+      "description": "Computer Science curriculum and hands-on learning experiences with regular assessments and student mentoring.",
+      "tags": ["Curriculum Design", "Teaching", "Student Engagement"]
+    },
+    {
+      "id": "tic-tac-toe",
+      "title": "Tic-tac-toe",
+      "description": "Human-versus-computer strategy game with three AI difficulty levels, round scoring, and accessible keyboard play.",
+      "tags": ["React", "Game AI", "Minimax", "Accessibility"]
+    },
+    {
+      "id": "snake",
+      "title": "Snake",
+      "description": "Responsive arcade game with food collection, snake growth, progressive speed levels, keyboard and touch controls.",
+      "tags": ["React", "Game Loop", "Responsive Controls"]
+    },
+    {
+      "id": "spaceship",
+      "title": "Spaceship Survival",
+      "description": "Asteroid-dodging survival game with lives, escalating levels, responsive controls, and persistent best results.",
+      "tags": ["React", "Animation", "Collision Detection"]
+    }
+  ],
+  "certificates": ["NSS Certificate", "Data Analysis and Visualization"],
+  "achievement": "Dean's List - Outstanding academic performance in M.Sc. Computer Science."
+}

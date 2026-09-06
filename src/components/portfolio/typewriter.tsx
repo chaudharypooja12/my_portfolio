@@ -27,20 +27,21 @@ export function Typewriter() {
     }
 
     if (isDeleting && text === "") {
-      setIsDeleting(false);
-      setWordIndex((prev) => (prev + 1) % words.length);
-      return;
+      timeoutRef.current = setTimeout(() => {
+        setIsDeleting(false);
+        setWordIndex((prev) => (prev + 1) % words.length);
+      }, 200);
+    } else {
+      const speed = isDeleting ? 40 : 80;
+
+      timeoutRef.current = setTimeout(() => {
+        setText(
+          isDeleting
+            ? currentWord.substring(0, text.length - 1)
+            : currentWord.substring(0, text.length + 1)
+        );
+      }, speed);
     }
-
-    const speed = isDeleting ? 40 : 80;
-
-    timeoutRef.current = setTimeout(() => {
-      setText(
-        isDeleting
-          ? currentWord.substring(0, text.length - 1)
-          : currentWord.substring(0, text.length + 1)
-      );
-    }, speed);
 
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);

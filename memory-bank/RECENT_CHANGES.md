@@ -2,6 +2,21 @@
 
 ## Log
 
+### 2026-09-06 — Rebuilt resume and added playable project demos
+- Added `src/data/portfolio.json` as structured resume and project content
+- Added `pdf-lib` generator and `npm run resume:generate`
+- Replaced the broken PDF with generated two-page `public/Pooja_Resume.pdf`
+- Updated resume download UI with accurate format badges and direct download
+- Removed obsolete manual resume instructions
+- Replaced the Projects carousel presentation with responsive project grids
+- Added accessible game dialogs that mount only the selected game
+- Added playable Tic-tac-toe with Easy, Medium, and Hard AI
+- Added playable Snake with growth, levels, keyboard/touch controls, and records
+- Added Spaceship Survival with asteroid collisions, lives, levels, and records
+- Added local best-result persistence for all three games
+- Added blur/hidden-tab pausing for real-time games and lifecycle cleanup
+- Updated PRD, design, tech stack, index, resume, and projects memory-bank files
+
 ### 2026-09-06 — Fixed resume download build error
 - Removed asChild prop from Button component
 - Used styled anchor tag instead
@@ -10,8 +25,8 @@
 ### 2026-09-06 — Added Resume Download section
 - Created resume-download.tsx component
 - Added to page.tsx and navigation
-- Added RESUME_INSTRUCTIONS.txt in public folder
-- User needs to add resume.pdf to public folder
+- This initial manual-file workflow was superseded by the generated
+  `Pooja_Resume.pdf` workflow documented above
 
 ### 2026-09-06 — Updated portfolio context (PRD, TECH_STACK)
 - Updated TECH_STACK.md with AI & Automation tools section

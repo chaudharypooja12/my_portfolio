@@ -17,7 +17,16 @@
 
 - shadcn/ui v4 (@base-ui/react primitives)
 - Lucide React (icons, no emojis)
-- Custom components: Starfield, NebulaBackground, SkyBackground, CursorGlow, ScrollReveal, ThemeProvider, ThemeToggle, Carousel, Typewriter, StatsCounter
+- Custom components: Starfield, NebulaBackground, SkyBackground, CursorGlow,
+  ScrollReveal, ThemeProvider, ThemeToggle, Dialog, Typewriter, StatsCounter
+- Playable React games: Tic-tac-toe, Snake, Spaceship Survival
+
+## Documents and Content
+
+- `pdf-lib` for deterministic ATS resume generation
+- Standard embedded Helvetica fonts for portable PDF rendering
+- `src/data/portfolio.json` as the shared resume and project content source
+- `npm run resume:generate` writes `public/Pooja_Resume.pdf`
 
 ## AI & Automation Tools
 
@@ -58,16 +67,26 @@ my_portfolio/src/
 │   ├── layout/             # Nav, Starfield, Nebula, Sky, Theme
 │   ├── portfolio/          # Carousel, Stats, Typewriter
 │   ├── sections/           # Section headers
-│   └── ui/                 # shadcn/ui
+│   └── ui/                 # shadcn/ui + accessible dialog
+├── data/
+│   └── portfolio.json      # Resume and project content source
 └── modules/
     ├── home/               # Hero section
     ├── about/              # About section
     ├── experience/         # Experience timeline
     ├── skills/             # Skills grid
     ├── education/          # Education timeline
-    ├── projects/           # Projects carousel
+    ├── projects/           # Project grids and playable game dialogs
+    │   └── games/          # Tic-tac-toe, Snake, Spaceship Survival
     ├── certificates/       # Certificates
     └── achievements/       # Achievements
+```
+
+Repository-level resume files:
+
+```text
+scripts/generate-resume.mjs  # Two-page PDF generator
+public/Pooja_Resume.pdf      # Generated downloadable resume
 ```
 
 ## Theme System

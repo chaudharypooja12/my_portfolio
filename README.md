@@ -38,7 +38,7 @@ A **cosmic galaxy-themed** personal portfolio built with Next.js, featuring anim
 
 **Features**
 - Typewriter role animation
-- Auto-scrolling project carousel
+- Responsive project grids with three playable game demos
 - Animated stats counters
 - Scroll-reveal animations
 - Active section navigation
@@ -129,7 +129,10 @@ my_portfolio/
 │   │   ├── layout/             # Navigation, Footer, Starfield, Nebula
 │   │   ├── portfolio/          # Carousel, Stats, Typewriter
 │   │   ├── sections/           # Section headers
-│   │   └── ui/                 # shadcn/ui components
+│   │   └── ui/                 # shadcn/ui components and game dialog
+│   │
+│   ├── data/
+│   │   └── portfolio.json      # Shared resume and project content
 │   │
 │   └── modules/
 │       ├── home/               # Hero section
@@ -137,12 +140,17 @@ my_portfolio/
 │       ├── experience/         # Experience timeline
 │       ├── skills/             # Skills grid
 │       ├── education/          # Education timeline
-│       ├── projects/           # Projects carousel
+│       ├── projects/           # Project grids and playable games
+│       ├── resume/             # Resume download section
 │       ├── certificates/       # Certificates section
 │       └── achievements/       # Achievements highlight
 │
+├── scripts/
+│   └── generate-resume.mjs     # Two-page ATS PDF generator
+│
 ├── public/
-│   └── images/                 # Static images
+│   ├── images/                 # Static images
+│   └── Pooja_Resume.pdf        # Generated downloadable resume
 │
 ├── memory-bank/                # Project documentation
 ├── package.json
@@ -163,9 +171,10 @@ my_portfolio/
 | **Experience** | Teaching timeline with glowing dots and responsibility cards |
 | **Skills** | Categorized skill bars with gradient progress indicators |
 | **Education** | Academic timeline with degree cards |
-| **Projects** | Auto-scrolling carousel with 4 project slides |
+| **Projects** | Four featured work cards and three playable game dialogs |
 | **Certificates** | NSS Certificate & Data Analysis certification |
 | **Achievements** | Dean's List recognition highlight |
+| **Resume** | Generated two-page ATS PDF download |
 
 ---
 

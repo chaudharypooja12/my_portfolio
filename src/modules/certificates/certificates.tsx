@@ -1,4 +1,4 @@
-import { Award, Shield } from "lucide-react";
+import { Award } from "lucide-react";
 import { SectionHeader } from "@/components/sections/section-header";
 
 const certificates = [

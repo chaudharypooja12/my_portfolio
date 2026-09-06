@@ -29,6 +29,17 @@ Entry point for all agent tasks. Read this first.
 
 ## Current State
 
-Fully implemented and deployed. All 9 portfolio sections complete.
-Light/dark mode with theme toggle. Resume download section added.
-Deployed on Vercel. User needs to add resume.pdf to public folder.
+All portfolio sections are implemented with light/dark theme support. Projects
+now includes four professional work cards and three playable game demos in
+accessible dialogs. The repository ships a generated two-page ATS resume at
+`public/Pooja_Resume.pdf`; regenerate it with `npm run resume:generate` after
+editing `src/data/portfolio.json`.
+
+## Shared Sources
+
+| Source | Purpose |
+|---|---|
+| `src/data/portfolio.json` | Structured profile, resume, and project content |
+| `scripts/generate-resume.mjs` | Deterministic two-page PDF generation |
+| `src/components/ui/dialog.tsx` | Accessible game dialog primitive |
+| `src/modules/projects/games/` | Tic-tac-toe, Snake, and Spaceship Survival |

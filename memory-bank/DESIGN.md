@@ -69,6 +69,21 @@ Scroll-reveal: IntersectionObserver adds `revealed` class.
 - Tablet (640-1024px): Adaptive cards, two-column layouts
 - Desktop (>1024px): Full nav, multi-column, full animations
 
+## Projects and Game Dialogs
+
+- Featured work uses a responsive two-column glass-card grid.
+- Playable demos use one card per column on small screens and three columns on
+  wide screens.
+- Each game card includes a rules summary, levels, controls, tags, and a clear
+  Play Game action.
+- Games open in a centered, scrollable dialog capped at 92dvh so controls remain
+  usable on mobile and desktop.
+- The overlay uses a dark translucent backdrop and blur while the popup retains
+  the current light/dark theme tokens.
+- Only the selected game mounts, preventing hidden animation loops and input
+  listeners.
+
 ## Accessibility
 
-Semantic HTML, keyboard nav, focus states, ARIA labels, contrast ratios, alt text, reduced motion support.
+Semantic HTML, keyboard nav, focus states, ARIA labels, dialog focus management,
+contrast ratios, alt text, live game status, and reduced motion support.

@@ -1,54 +1,132 @@
 # Module: Projects
 
-## Projects
+## Overview
 
-### Project 1 — Portfolio Website
+`src/modules/projects/projects.tsx` reads `portfolioData.projects` from
+`src/data/portfolio.json`, maps each entry to a project card model, and splits
+the section into:
 
-Cosmic galaxy-themed personal portfolio built with Next.js 16, TypeScript,
-Tailwind CSS, shadcn/ui. Features animated starfield, glassmorphism UI,
-typewriter effects, auto-scrolling carousel, and light/dark mode.
+1. **Featured builds** — four glass cards for the non-game portfolio entries
+2. **Playable project demos** — three game cards that open focused dialogs
 
-**Technologies:** Next.js, TypeScript, Tailwind CSS, shadcn/ui, Vercel
-**Status:** Live on Vercel
+## Featured Builds
 
-### Project 2 — Attendance Management System
+The featured grid renders these four original work items as standard cards:
 
-An attendance management system developed to efficiently manage employee
-attendance.
+| ID | Title | Eyebrow | Highlights | Tags |
+|---|---|---|---|---|
+| `portfolio` | Portfolio Website | Flagship build | Cosmic glassmorphism, responsive light/dark themes | Next.js, TypeScript, Tailwind CSS, shadcn/ui |
+| `attendance` | Attendance Management System | Operations workflow | Daily attendance tracking, reporting-focused review flow | Employee Tracking, Management System, Reporting |
+| `banking` | Banking Application | Core application | Account opening, balance enquiry | Account Opening, Balance Enquiry, Financial |
+| `education` | CS Education & Teaching | Teaching practice | Curriculum design, assessments, mentoring | Curriculum Design, Teaching, Student Engagement |
 
-**Technologies:** Unknown (do not invent)
-**Status:** Completed
+## Playable Demo Card + Dialog Behavior
 
-### Project 3 — Banking Application
+- Each playable card is a full-width button with `aria-haspopup="dialog"`.
+- Clicking a card sets `selectedGameId`, finds the matching game definition, and
+  opens the shared dialog from `src/components/ui/dialog.tsx`.
+- The dialog header shows the selected game's title and `dialogDescription`.
+- Only the selected game component mounts in the dialog body, so inactive games
+  do not run in the background.
+- Closing the dialog resets `selectedGameId` to `null`.
+- The shared dialog supplies a blurred overlay, bordered popup shell, and an
+  explicit close button labeled **Close game**.
 
-Implemented features including:
-- Account opening
-- Balance enquiry
+## Playable Demo 1 — Tic-tac-toe
 
-**Technologies:** Unknown (do not invent)
-**Status:** Completed
+**Source:** `src/modules/projects/games/tic-tac-toe/tic-tac-toe-game.tsx`
 
-## Implementation
+- Human (`X`) vs computer (`O`)
+- Player always moves first
+- Status text is announced through a live region
+- Board uses `role="grid"` with labeled squares for accessible play
 
-### Projects Section (`src/modules/projects/projects.tsx`)
+### Difficulty
 
-- Auto-scrolling carousel component
-- Pause on hover
-- Project cards with glassmorphism
-- Tech badges for each project
-- Responsive layout
+- **Easy:** random legal moves
+- **Medium:** immediate tactical move if available most of the time, otherwise random
+- **Hard:** optimal minimax play
 
-### Carousel Component (`src/components/portfolio/carousel.tsx`)
+### Match Flow
 
-- Infinite auto-scroll using CSS animation
-- Pause on hover
-- Smooth continuous scrolling
-- Duplicate items for seamless loop
+- **New round** clears the board but keeps match scores
+- **Restart match** clears board plus scores
+- Tracks player wins, computer wins, draws, and best saved result
 
-### Responsive
+### Persistence
 
-- 3 cards visible on desktop
-- 2 on tablet
-- 1 on mobile
+- localStorage key: `portfolio:projects:games:tic-tac-toe:best-player-wins`
+- Saves the best number of player wins reached in the current browser
 
-Status: Implemented (2026-09-05)
+## Playable Demo 2 — Snake
+
+**Source:** `src/modules/projects/games/snake/snake-game.tsx`
+
+- 16×16 grid-based board
+- Start, Pause, Resume, and Restart controls
+- Status text explains idle, paused, running, and game-over states
+
+### Rules
+
+- Stay inside the grid
+- Eat food to grow and score
+- Avoid walls and your own body
+- Filling the full board ends the run as `boardFull`
+
+### Levels and Scoring
+
+- Level starts at 1
+- Every 4 food pickups increases the level
+- Tick speed starts at 220 ms and accelerates by 18 ms per level down to 90 ms minimum
+- Each food awards `10 × current level`
+
+### Controls
+
+- Keyboard: arrow keys or WASD
+- Touch: on-screen four-direction pad
+- Window blur or a hidden tab auto-pauses the game
+
+### Persistence
+
+- localStorage key: `portfolio-snake-stats`
+- Saves `highScore` and `highestLevel` on the current device
+
+## Playable Demo 3 — Spaceship Survival
+
+**Source:** `src/modules/projects/games/spaceship/spaceship-game.tsx`
+
+- Survival game inside a responsive 16:10 play field
+- Start Game / Pause / Resume / Restart / Play Again flow
+- Overlay states for Ready, Paused, and Game Over
+
+### Rules
+
+- Dodge falling asteroids
+- Survive as long as possible
+- Start with 3 lives
+- After each hit, the ship gets a short invulnerability shield window
+
+### Levels and Difficulty
+
+- Level starts at 1
+- Advances every 15 seconds survived
+- Difficulty caps at level 10
+- Asteroid spawn interval speeds up as levels rise
+- Asteroid count scales upward, capped at 12 concurrent asteroids
+
+### Controls
+
+- Keyboard: arrow keys or WASD
+- Touch: hold the on-screen direction pad to strafe
+- Window blur or hidden tab auto-pauses the game
+- Pausing freezes any remaining post-hit shield time until play resumes
+
+### Persistence
+
+- localStorage key: `portfolio-spaceship-survival:v1`
+- Saves best survival time and best level on the current device
+
+## Status
+
+Projects section upgraded and documented for featured builds + playable demos on
+2026-09-06.

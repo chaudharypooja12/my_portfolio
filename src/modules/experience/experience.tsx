@@ -1,12 +1,6 @@
 import {
   Calendar,
-  Building2,
-  BookOpen,
-  Users,
-  ClipboardCheck,
   Lightbulb,
-  RefreshCw,
-  Handshake,
   Briefcase,
   Code2,
   Laptop,

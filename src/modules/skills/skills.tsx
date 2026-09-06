@@ -14,7 +14,6 @@ import {
   Blocks,
   Globe2,
   Mail,
-  Shield,
   Cpu,
   Brain,
   MessageSquare,

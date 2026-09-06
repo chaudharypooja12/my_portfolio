@@ -1,16 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import { ArrowDown, Sparkles, Code2, GraduationCap, Globe } from "lucide-react";
 import { Typewriter } from "@/components/portfolio/typewriter";
+import { useMounted } from "@/hooks/use-mounted";
 
 export function HeroSection() {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useMounted();
 
   return (
     <section

@@ -1,6 +1,6 @@
 "use client";
 
-import { Download, FileText } from "lucide-react";
+import { CheckCircle2, Download, FileText } from "lucide-react";
 import { SectionHeader } from "@/components/sections/section-header";
 
 export function ResumeDownload() {
@@ -28,13 +28,24 @@ export function ResumeDownload() {
                 <p className="mt-2 text-muted-foreground">
                   M.Sc. Computer Science | CS Teacher & Developer
                 </p>
+                <div className="mt-4 flex flex-wrap justify-center gap-2 text-xs text-muted-foreground">
+                  {["2-page PDF", "ATS-friendly", "Updated portfolio details"].map(
+                    (detail) => (
+                      <span
+                        key={detail}
+                        className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-background/50 px-3 py-1.5"
+                      >
+                        <CheckCircle2 className="size-3.5 text-success" />
+                        {detail}
+                      </span>
+                    ),
+                  )}
+                </div>
               </div>
 
               <a
                 href="/Pooja_Resume.pdf"
                 download="Pooja_Resume.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
                 className="group relative inline-flex h-11 w-full items-center justify-center gap-2 overflow-hidden rounded-md bg-primary px-8 font-semibold text-primary-foreground shadow-lg transition-all duration-300 hover:bg-primary/90 hover:shadow-[0_0_20px_oklch(0.7_0.22_280/40%)]"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-primary via-nebula-2 to-accent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
