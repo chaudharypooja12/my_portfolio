@@ -72,14 +72,14 @@ export function CertificatesSection() {
                   {cert.imageSrc && (
                     <DialogTrigger
                       aria-label={`View ${cert.title} certificate`}
-                      className="relative aspect-video w-full overflow-hidden border-b border-glass-border/60 bg-muted"
+                      className="relative h-48 w-full overflow-hidden border-b border-glass-border/60 bg-muted p-4 sm:h-56"
                     >
                       <Image
                         src={cert.imageSrc}
                         alt={cert.imageAlt ?? cert.title}
                         fill
                         sizes="(max-width: 767px) calc(100vw - 2rem), 50vw"
-                        className="object-cover transition duration-700 ease-out group-hover:scale-[1.04]"
+                        className="object-contain p-4 transition duration-700 ease-out group-hover:scale-[1.04]"
                       />
                       <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition group-hover:bg-black/40 group-hover:opacity-100">
                         <span className="flex items-center gap-2 rounded-full bg-background/90 px-3 py-1.5 text-xs font-semibold">
